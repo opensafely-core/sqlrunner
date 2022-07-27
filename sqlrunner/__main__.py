@@ -1,44 +1,4 @@
-import argparse
-import csv
-import pathlib
-
-from main import run_sql
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--database_connection",
-        required=True,
-        type=str,
-        help="String of database connection",
-    )
-    parser.add_argument(
-        "--sql_query",
-        required=True,
-        type=pathlib.Path,
-        help="Path to the SQL file containing the query",
-    )
-    parser.add_argument(
-        "--output",
-        required=True,
-        type=pathlib.Path,
-        help="Path to the output CSV file",
-    )
-    return parser.parse_args()
-
-
-def read_sql(sql_query):
-    """Open and read SQL file"""
-    return sql_query.read_text(encoding="utf-8")
-
-
-def write_results(results, path):
-    """Write results"""
-    with path.open(mode="w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=results[0].keys())
-        writer.writeheader()
-        writer.writerows(results)
+from main import parse_args, read_sql, run_sql, write_results
 
 
 def main():

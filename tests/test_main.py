@@ -1,9 +1,14 @@
+import pathlib
+
+from sqlrunner import main
+
+
 def test_parse_args(monkeypatch):
     # arrange
     monkeypatch.setattr(
         "sys.argv",
         [
-            "__main__.py",
+            "main.py",
             "--database_connection",
             "",
             "--sql_query",
@@ -14,10 +19,12 @@ def test_parse_args(monkeypatch):
     )
 
     # act
-    # ...
+    args = main.parse_args()
 
     # assert
-    # ...
+    assert args.database_connection == ""
+    assert args.sql_query == pathlib.Path("")
+    assert args.output == pathlib.Path("")
 
 
 def test_read_sql(tmp_path):
@@ -26,10 +33,10 @@ def test_read_sql(tmp_path):
     sql_file.write_text("SELECT id FROM my_table;", "utf-8")
 
     # act
-    # ...
+    sql_query = main.read_sql(sql_file)
 
     # assert
-    # ...
+    assert sql_query == "SELECT id FROM my_table;"
 
 
 def test_write_results(tmp_path):
