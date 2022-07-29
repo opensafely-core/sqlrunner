@@ -10,7 +10,7 @@ def parse_args():
     """Parse arguments that specify database connection and paths to SQL query and output file.
 
     Returns:
-        A dictionary with ...
+        TODO
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -35,45 +35,45 @@ def parse_args():
 
 
 def read_sql(sql_query):
-    """Open and read file with SQL code."""
+    """Open and read file with SQL code.
+
+    Returns:
+        TODO
+    """
     return sql_query.read_text(encoding="utf-8")
-
-
-def write_results(results, path):
-    """Write results as CSV file including column names."""
-    with path.open(mode="w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=results[0].keys())
-        writer.writeheader()
-        writer.writerows(results)
 
 
 def run_sql(database_connection, sql_query):
     """
     Run arbitrary SQL code against an OpenSAFELY backend.
+
+    Returns:
+        TODO
     """
 
-    server = database_connection
-    user = ""
-    password = ""
-    database = ""
-    conn = pymssql.connect(server, user, password, database)
+    user = database_connection["username"]
+    server = database_connection["host_from_host"]
+    password = database_connection["password"]
+    database = database_connection["db_name"]
+    port = int(database_connection["port_from_host"])
+
+    conn = pymssql.connect(
+        user=user, server=server, password=password, database=database, port=port
+    )
+
     cursor = conn.cursor()
-    cursor.execute(sql_query)
-    # 1. create a connection from the given URL
-    # Check PyMySQL examples
-    # https://pypi.org/project/pymssql/#basic-example
-    # https://pymssql.readthedocs.io/en/stable/pymssql_examples.html
+    results = cursor.execute(sql_query)
+    conn.close()
 
-    # 2. Read the SQL code from the given path
+    return results
 
-    # 3. Execute the SQL against the connection
 
-    # 4. Write the output to a CSV file
-    # Use pattern of basic example in the docs:
-    # https://pypi.org/project/pymssql/#basic-example
-
-    return [
-        {"event_code": 1, "event_desc": "event 1 description", "count": 1},
-        {"event_code": 2, "event_desc": "event 2 description", "count": 5},
-        {"event_code": 3, "event_desc": "event 3 description", "count": 10},
-    ]
+def write_results(results, path):
+    """Write results as CSV file including column names.
+    Returns:
+        TODO
+    """
+    with path.open(mode="w", newline="", encoding="utf-8") as output:
+        writer = csv.DictWriter(output, fieldnames=results[0].keys())
+        writer.writeheader()
+        writer.writerows(results)

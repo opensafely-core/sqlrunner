@@ -1,7 +1,5 @@
 import pathlib
 
-import pymssql
-
 from sqlrunner import main
 
 
@@ -55,19 +53,8 @@ def test_write_results(tmp_path):
 
 def test_run_sql(mssql_database):
     # arrange
-    # https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls
-    # dialect+driver://username:password@host:port/database
-    user = mssql_database["username"]
-    password = mssql_database["password"]
-    port = int(mssql_database["port_from_host"])
-    server = mssql_database["host_from_host"]
-    database = mssql_database["db_name"]
-    # try:
-    conn = pymssql.connect(
-        user=user, server=server, password=password, database=database, port=port
-    )
-    cursor = conn.cursor()
-    cursor.execute("SELECT 123")
+
+    # act
+    main.run_sql(database_connection=mssql_database, sql_query="SELECT 123")
+
     # assert
-    assert cursor.fetchall() == [(123,)]
-    conn.close()
