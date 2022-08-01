@@ -1,3 +1,4 @@
+import csv
 import pathlib
 
 from sqlrunner import main
@@ -47,8 +48,14 @@ def test_write_results(tmp_path):
     # act
     main.write_results(results, results_file)
 
+    with results_file.open(mode="r", newline="", encoding="utf-8") as csv_file:
+        results = csv.reader(csv_file)
+        for row in results:
+            print(", ".join(row))
+
     # assert
-    # TODO
+    # TODO: This needs a better test
+    assert row == ["2"]
 
 
 def test_run_sql(mssql_database):
