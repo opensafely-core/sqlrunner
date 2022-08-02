@@ -1,4 +1,3 @@
-# import pymssql
 import argparse
 import csv
 import pathlib
