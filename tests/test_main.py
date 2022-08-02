@@ -42,20 +42,18 @@ def test_read_sql(tmp_path):
 
 def test_write_results(tmp_path):
     # arrange
-    results_file = tmp_path / "results.csv"  # noqa
-    results = [{"id": 1}, {"id": 2}]  # noqa
+    results_file = tmp_path / "results.csv"
 
     # act
-    main.write_results(results, results_file)
-
-    with results_file.open(mode="r", newline="", encoding="utf-8") as csv_file:
-        results = csv.reader(csv_file)
-        for row in results:
-            print(", ".join(row))
+    main.write_results([{"id": 1}, {"id": 2}], results_file)
 
     # assert
-    # TODO: This needs a better test
-    assert row == ["2"]
+    with results_file.open(newline="") as f:
+        results = list(csv.DictReader(f))
+
+    assert len(results) == 2
+    assert results[0] == {"id": "1"}
+    assert results[1] == {"id": "2"}
 
 
 def test_run_sql(mssql_database):
