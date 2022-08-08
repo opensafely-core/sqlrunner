@@ -1,9 +1,9 @@
 import argparse
 import csv
 import pathlib
+from urllib import parse
 
-import sqlalchemy
-from sqlalchemy.engine.url import URL
+import pymssql
 
 
 def parse_args():
@@ -43,16 +43,6 @@ def read_sql(sql_query):
     return sql_query.read_text(encoding="utf-8")
 
 
-def mssql_sqlalchemy_engine_from_url(url):
-    """
-    Create a sqlalchemy connection from MS-SQL URL
-
-    Returns:
-        TODO
-    """
-    return sqlalchemy.create_engine(URL(url))
-
-
 def run_sql(database_connection, sql_query):
     """
     Run arbitrary SQL code against an OpenSAFELY backend.
@@ -61,9 +51,15 @@ def run_sql(database_connection, sql_query):
         TODO
     """
 
-    engine = mssql_sqlalchemy_engine_from_url(database_connection)
-    conn = engine.connect()
+    parsed_url = parse.urlparse(database_connection)
 
+    conn = pymssql.connect(
+        user=parsed_url.username,
+        password=parsed_url.password,
+        server=parsed_url.hostname,
+        port=parsed_url.port,
+        database=parsed_url.path,
+    )
     cursor = conn.cursor()
     results = cursor.execute(sql_query)
     conn.close()

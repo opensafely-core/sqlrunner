@@ -62,10 +62,10 @@ def test_run_sql(mssql_database):
     driver = "pymssql"
 
     user = mssql_database["username"]
-    server = mssql_database["host_from_host"]
     password = mssql_database["password"]
-    database = mssql_database["db_name"]
+    server = mssql_database["host_from_host"]
     port = mssql_database["port_from_host"]
+    database = mssql_database["db_name"]
 
     database_url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
     # act
