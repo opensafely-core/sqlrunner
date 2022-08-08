@@ -58,8 +58,17 @@ def test_write_results(tmp_path):
 
 def test_run_sql(mssql_database):
     # arrange
+    dialect = "mssql"
+    driver = "pymssql"
 
+    user = mssql_database["username"]
+    server = mssql_database["host_from_host"]
+    password = mssql_database["password"]
+    database = mssql_database["db_name"]
+    port = mssql_database["port_from_host"]
+
+    database_url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
     # act
-    main.run_sql(database_connection=mssql_database, sql_query="SELECT 123")
+    main.run_sql(database_connection=database_url, sql_query="SELECT 123")
 
     # assert
