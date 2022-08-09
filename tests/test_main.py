@@ -69,7 +69,9 @@ def test_run_sql(mssql_database):
 
     # act
     database_url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
-    results = main.run_sql(database_connection=database_url, sql_query="SELECT 123")
+    results = main.run_sql(
+        database_connection=database_url, sql_query="SELECT 1 AS patient_id"
+    )
 
     # assert
-    assert results == [(123,)]
+    assert results == [{"patient_id": 1}]

@@ -59,6 +59,7 @@ def run_sql(database_connection, sql_query):
         server=parsed_url.hostname,
         port=parsed_url.port,
         database=parsed_url.path[1:],
+        as_dict=True,
     )
     cursor = conn.cursor()
     cursor.execute(sql_query)
