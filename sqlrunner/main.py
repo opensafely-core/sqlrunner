@@ -58,10 +58,11 @@ def run_sql(database_connection, sql_query):
         password=parsed_url.password,
         server=parsed_url.hostname,
         port=parsed_url.port,
-        database=parsed_url.path,
+        database=parsed_url.path[1:],
     )
     cursor = conn.cursor()
-    results = cursor.execute(sql_query)
+    cursor.execute(sql_query)
+    results = cursor.fetchall()
     conn.close()
 
     return results

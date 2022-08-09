@@ -67,8 +67,9 @@ def test_run_sql(mssql_database):
     port = mssql_database["port_from_host"]
     database = mssql_database["db_name"]
 
-    database_url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
     # act
-    main.run_sql(database_connection=database_url, sql_query="SELECT 123")
+    database_url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
+    results = main.run_sql(database_connection=database_url, sql_query="SELECT 123")
 
     # assert
+    assert results == [(123,)]
