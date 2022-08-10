@@ -32,7 +32,7 @@ def read_text(f_path):
     return f_path.read_text(encoding="utf-8")
 
 
-def run_sql(url, sql_query):
+def run_sql(*, url, sql_query):
     # `url` is expected to follow RFC-1738, just as SQL Alchemy expects:
     # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
     # dialect+driver://username:password@host:port/database
