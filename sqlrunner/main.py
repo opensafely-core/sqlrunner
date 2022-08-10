@@ -15,16 +15,16 @@ def parse_args():
         help="String of database connection URL",
     )
     parser.add_argument(
-        "--sql_query",
+        "--f_path_input",
         required=True,
         type=pathlib.Path,
-        help="Path to the SQL file containing the query",
+        help="Filepath to the SQL file containing the query",
     )
     parser.add_argument(
-        "--output",
+        "--f_path_output",
         required=True,
         type=pathlib.Path,
-        help="Path to the output CSV file",
+        help="Filepath to the output CSV file",
     )
     return parser.parse_args()
 
@@ -52,8 +52,8 @@ def run_sql(url, sql_query):
     return results
 
 
-def write_results(results, path):
-    with path.open(mode="w", newline="", encoding="utf-8") as output:
+def write_results(results, f_path_output):
+    with f_path_output.open(mode="w", newline="", encoding="utf-8") as output:
         writer = csv.DictWriter(output, fieldnames=results[0].keys())
         writer.writeheader()
         writer.writerows(results)

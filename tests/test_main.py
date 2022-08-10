@@ -12,9 +12,9 @@ def test_parse_args(monkeypatch):
             "main.py",
             "--url",
             "dialect+driver://user:password@server:port/database",
-            "--sql_query",
+            "--f_path_input",
             "query.sql",
-            "--output",
+            "--f_path_output",
             "results.csv",
         ],
     )
@@ -24,17 +24,17 @@ def test_parse_args(monkeypatch):
 
     # assert
     assert args.url == "dialect+driver://user:password@server:port/database"
-    assert args.sql_query == pathlib.Path("query.sql")
-    assert args.output == pathlib.Path("results.csv")
+    assert args.f_path_input == pathlib.Path("query.sql")
+    assert args.f_path_output == pathlib.Path("results.csv")
 
 
 def test_read_sql(tmp_path):
     # arrange
-    sql_file = tmp_path / "query.sql"
-    sql_file.write_text("SELECT id FROM my_table;", "utf-8")
+    f_path_input = tmp_path / "query.sql"
+    f_path_input.write_text("SELECT id FROM my_table;", "utf-8")
 
     # act
-    sql_query = main.read_sql(sql_file)
+    sql_query = main.read_sql(f_path_input)
 
     # assert
     assert sql_query == "SELECT id FROM my_table;"
@@ -42,13 +42,13 @@ def test_read_sql(tmp_path):
 
 def test_write_results(tmp_path):
     # arrange
-    results_file = tmp_path / "results.csv"
+    f_path_output = tmp_path / "results.csv"
 
     # act
-    main.write_results([{"id": 1}, {"id": 2}], results_file)
+    main.write_results([{"id": 1}, {"id": 2}], f_path_output)
 
     # assert
-    with results_file.open(newline="") as f:
+    with f_path_output.open(newline="") as f:
         results = list(csv.DictReader(f))
 
     assert len(results) == 2
