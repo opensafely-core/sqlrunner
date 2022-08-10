@@ -7,11 +7,6 @@ import pymssql
 
 
 def parse_args():
-    """Parse arguments that specify database connection and paths to SQL query and output file.
-
-    Returns:
-        TODO
-    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--database_connection",
@@ -35,22 +30,10 @@ def parse_args():
 
 
 def read_sql(sql_query):
-    """Open and read file with SQL code.
-
-    Returns:
-        TODO
-    """
     return sql_query.read_text(encoding="utf-8")
 
 
 def run_sql(database_connection, sql_query):
-    """
-    Run arbitrary SQL code against an OpenSAFELY backend.
-
-    Returns:
-        TODO
-    """
-
     parsed_url = parse.urlparse(database_connection)
 
     conn = pymssql.connect(
@@ -70,10 +53,6 @@ def run_sql(database_connection, sql_query):
 
 
 def write_results(results, path):
-    """Write results as CSV file including column names.
-    Returns:
-        TODO
-    """
     with path.open(mode="w", newline="", encoding="utf-8") as output:
         writer = csv.DictWriter(output, fieldnames=results[0].keys())
         writer.writeheader()
