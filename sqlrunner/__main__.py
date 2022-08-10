@@ -1,17 +1,12 @@
-from main import parse_args, read_text, run_sql, write_results
+from sqlrunner import main
 
 
-def main():
-    args = parse_args()
-    url = args.url
-    input_file = args.input_file
-    output_file = args.output_file
+args = main.parse_args()
+url = args.url
+input_file = args.input_file
+output_file = args.output_file
 
-    sql_query = read_text(input_file)
-    results = run_sql(url=url, sql_query=sql_query)
+sql_query = main.read_text(input_file)
+results = main.run_sql(url=url, sql_query=sql_query)
 
-    write_results(results, output_file)
-
-
-if __name__ == "__main__":
-    main()
+main.write_results(results, output_file)
