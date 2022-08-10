@@ -12,7 +12,7 @@ def parse_args():
         "--url",
         required=True,
         type=str,
-        help="String of database connection",
+        help="String of database connection URL",
     )
     parser.add_argument(
         "--sql_query",

@@ -11,7 +11,7 @@ def test_parse_args(monkeypatch):
         [
             "main.py",
             "--url",
-            "lalala",
+            "dialect+driver://user:password@server:port/database",
             "--sql_query",
             "query.sql",
             "--output",
@@ -23,7 +23,7 @@ def test_parse_args(monkeypatch):
     args = main.parse_args()
 
     # assert
-    assert args.url == "lalala"
+    assert args.url == "dialect+driver://user:password@server:port/database"
     assert args.sql_query == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
 
