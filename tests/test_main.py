@@ -1,4 +1,3 @@
-import csv
 import pathlib
 
 from sqlrunner import main
@@ -48,12 +47,7 @@ def test_write_results(tmp_path):
     main.write_results([{"id": 1}, {"id": 2}], f_path)
 
     # assert
-    with f_path.open(newline="") as f:
-        results = list(csv.DictReader(f))
-
-    assert len(results) == 2
-    assert results[0] == {"id": "1"}
-    assert results[1] == {"id": "2"}
+    assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
 
 
 def test_run_sql(mssql_database):
