@@ -17,13 +17,13 @@ def parse_args():
         "--f_path_input",
         required=True,
         type=pathlib.Path,
-        help="Filepath to the SQL file containing the query",
+        help="Path to the input SQL file",
     )
     parser.add_argument(
         "--f_path_output",
         required=True,
         type=pathlib.Path,
-        help="Filepath to the output CSV file",
+        help="Path to the output CSV file",
     )
     return parser.parse_args()
 
