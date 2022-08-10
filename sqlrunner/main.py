@@ -33,6 +33,9 @@ def read_text(f_path):
 
 
 def run_sql(url, sql_query):
+    # `url` is expected to follow RFC-1738, just as SQL Alchemy expects:
+    # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
+    # dialect+driver://username:password@host:port/database
     parsed_url = parse.urlparse(url)
 
     conn = pymssql.connect(
@@ -40,7 +43,7 @@ def run_sql(url, sql_query):
         password=parsed_url.password,
         server=parsed_url.hostname,
         port=parsed_url.port,
-        database=parsed_url.path[1:],
+        database=parsed_url.path.strip("/"),
         as_dict=True,
     )
     cursor = conn.cursor()
