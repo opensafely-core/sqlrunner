@@ -14,13 +14,13 @@ def parse_args():
         help="Database URL",
     )
     parser.add_argument(
-        "--f_path_input",
+        "--input-file",
         required=True,
         type=pathlib.Path,
         help="Path to the input SQL file",
     )
     parser.add_argument(
-        "--f_path_output",
+        "--output-file",
         required=True,
         type=pathlib.Path,
         help="Path to the output CSV file",

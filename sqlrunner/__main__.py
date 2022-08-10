@@ -4,13 +4,14 @@ from main import parse_args, read_sql, run_sql, write_results
 def main():
     args = parse_args()
     url = args.url
-    f_path_input = args.f_path_input
-    f_path_output = args.f_path_output
-    sql_query = read_sql(f_path_input)
+    input_file = args.input_file
+    output_file = args.output_file
+
+    sql_query = read_sql(input_file)
 
     results = run_sql(url=url, sql_query=sql_query)
 
-    write_results(results, f_path_output)
+    write_results(results, output_file)
 
 
 if __name__ == "__main__":
