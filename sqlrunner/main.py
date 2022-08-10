@@ -54,8 +54,9 @@ def run_sql(*, url, sql_query):
     return results
 
 
-def write_results(results, f_path_output):
-    with f_path_output.open(mode="w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=results[0].keys())
+def write_results(results, f_path):
+    fieldnames = results[0].keys()
+    with f_path.open(mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames)
         writer.writeheader()
         writer.writerows(results)

@@ -42,13 +42,13 @@ def test_read_text(tmp_path):
 
 def test_write_results(tmp_path):
     # arrange
-    f_path_output = tmp_path / "results.csv"
+    f_path = tmp_path / "results.csv"
 
     # act
-    main.write_results([{"id": 1}, {"id": 2}], f_path_output)
+    main.write_results([{"id": 1}, {"id": 2}], f_path)
 
     # assert
-    with f_path_output.open(newline="") as f:
+    with f_path.open(newline="") as f:
         results = list(csv.DictReader(f))
 
     assert len(results) == 2
