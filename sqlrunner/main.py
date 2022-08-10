@@ -28,8 +28,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def read_sql(sql_query):
-    return sql_query.read_text(encoding="utf-8")
+def read_text(f_path):
+    return f_path.read_text(encoding="utf-8")
 
 
 def run_sql(url, sql_query):

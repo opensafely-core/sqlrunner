@@ -1,4 +1,4 @@
-from main import parse_args, read_sql, run_sql, write_results
+from main import parse_args, read_text, run_sql, write_results
 
 
 def main():
@@ -7,8 +7,7 @@ def main():
     input_file = args.input_file
     output_file = args.output_file
 
-    sql_query = read_sql(input_file)
-
+    sql_query = read_text(input_file)
     results = run_sql(url=url, sql_query=sql_query)
 
     write_results(results, output_file)

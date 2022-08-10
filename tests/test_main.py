@@ -28,13 +28,13 @@ def test_parse_args(monkeypatch):
     assert args.output_file == pathlib.Path("results.csv")
 
 
-def test_read_sql(tmp_path):
+def test_read_text(tmp_path):
     # arrange
-    f_path_input = tmp_path / "query.sql"
-    f_path_input.write_text("SELECT id FROM my_table;", "utf-8")
+    f_path = tmp_path / "query.sql"
+    f_path.write_text("SELECT id FROM my_table;", "utf-8")
 
     # act
-    sql_query = main.read_sql(f_path_input)
+    sql_query = main.read_text(f_path)
 
     # assert
     assert sql_query == "SELECT id FROM my_table;"
