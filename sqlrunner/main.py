@@ -11,7 +11,6 @@ def parse_args():
     parser.add_argument(
         "--url",
         required=True,
-        type=str,
         help="String of database connection URL",
     )
     parser.add_argument(
