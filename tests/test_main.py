@@ -39,17 +39,6 @@ def test_read_text(tmp_path):
     assert sql_query == "SELECT 1 AS patient_id"
 
 
-def test_write_results(tmp_path):
-    # arrange
-    f_path = tmp_path / "results.csv"
-
-    # act
-    main.write_results([{"id": 1}, {"id": 2}], f_path)
-
-    # assert
-    assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
-
-
 def test_run_sql(mssql_database):
     # arrange
     dialect = "mssql"
@@ -66,3 +55,14 @@ def test_run_sql(mssql_database):
 
     # assert
     assert results == [{"patient_id": 1}]
+
+
+def test_write_results(tmp_path):
+    # arrange
+    f_path = tmp_path / "results.csv"
+
+    # act
+    main.write_results([{"id": 1}, {"id": 2}], f_path)
+
+    # assert
+    assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
