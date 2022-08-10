@@ -10,7 +10,7 @@ def test_parse_args(monkeypatch):
         "sys.argv",
         [
             "main.py",
-            "--database_connection",
+            "--url",
             "lalala",
             "--sql_query",
             "query.sql",
@@ -23,7 +23,7 @@ def test_parse_args(monkeypatch):
     args = main.parse_args()
 
     # assert
-    assert args.database_connection == "lalala"
+    assert args.url == "lalala"
     assert args.sql_query == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
 
@@ -68,10 +68,8 @@ def test_run_sql(mssql_database):
     database = mssql_database["db_name"]
 
     # act
-    database_url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
-    results = main.run_sql(
-        database_connection=database_url, sql_query="SELECT 1 AS patient_id"
-    )
+    url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
+    results = main.run_sql(url=url, sql_query="SELECT 1 AS patient_id")
 
     # assert
     assert results == [{"patient_id": 1}]

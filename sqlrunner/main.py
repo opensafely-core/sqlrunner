@@ -9,7 +9,7 @@ import pymssql
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--database_connection",
+        "--url",
         required=True,
         type=str,
         help="String of database connection",
@@ -33,8 +33,8 @@ def read_sql(sql_query):
     return sql_query.read_text(encoding="utf-8")
 
 
-def run_sql(database_connection, sql_query):
-    parsed_url = parse.urlparse(database_connection)
+def run_sql(url, sql_query):
+    parsed_url = parse.urlparse(url)
 
     conn = pymssql.connect(
         user=parsed_url.username,
