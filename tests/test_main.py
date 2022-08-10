@@ -60,15 +60,14 @@ def test_run_sql(mssql_database):
     # arrange
     dialect = "mssql"
     driver = "pymssql"
-
     user = mssql_database["username"]
     password = mssql_database["password"]
     server = mssql_database["host_from_host"]
     port = mssql_database["port_from_host"]
     database = mssql_database["db_name"]
+    url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
 
     # act
-    url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
     results = main.run_sql(url=url, sql_query="SELECT 1 AS patient_id")
 
     # assert
