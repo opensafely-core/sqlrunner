@@ -19,7 +19,7 @@ def parse_args():
         help="Path to the input SQL file",
     )
     parser.add_argument(
-        "--output-file",
+        "--output",
         required=True,
         type=pathlib.Path,
         help="Path to the output CSV file",
