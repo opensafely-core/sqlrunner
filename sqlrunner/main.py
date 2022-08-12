@@ -14,7 +14,7 @@ def parse_args():
         help="Database URL",
     )
     parser.add_argument(
-        "--input-file",
+        "--input",
         required=True,
         type=pathlib.Path,
         help="Path to the input SQL file",
