@@ -9,7 +9,7 @@ def test_parse_args(monkeypatch):
         "sys.argv",
         [
             "main.py",
-            "--url",
+            "--dsn",
             "dialect+driver://user:password@server:port/database",
             "--output",
             "results.csv",
@@ -21,7 +21,7 @@ def test_parse_args(monkeypatch):
     args = main.parse_args()
 
     # assert
-    assert args.url == "dialect+driver://user:password@server:port/database"
+    assert args.dsn == "dialect+driver://user:password@server:port/database"
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
 
@@ -47,10 +47,10 @@ def test_run_sql(mssql_database):
     server = mssql_database["host_from_host"]
     port = mssql_database["port_from_host"]
     database = mssql_database["db_name"]
-    url = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
+    dsn = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
 
     # act
-    results = main.run_sql(url=url, sql_query="SELECT 1 AS patient_id")
+    results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
 
     # assert
     assert results == [{"patient_id": 1}]
