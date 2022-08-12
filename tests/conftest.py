@@ -1,6 +1,6 @@
 import pytest
 
-from .databases import make_mssql_database
+from .databases import make_mssql_database, wait_for_database
 from .docker import Containers
 
 
@@ -12,4 +12,5 @@ def containers():
 @pytest.fixture(scope="session")
 def mssql_database(containers):
     database = make_mssql_database(containers)
+    wait_for_database(database)
     yield database

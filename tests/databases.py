@@ -1,7 +1,34 @@
+import time
 from pathlib import Path
+
+import pymssql
 
 
 MSSQL_SETUP_DIR = Path(__file__).absolute().parent / "support/mssql"
+
+
+def wait_for_database(database, timeout=10):
+    start = time.time()
+    limit = start + timeout
+    while True:
+        try:
+            conn = pymssql.connect(
+                user=database["username"],
+                password=database["password"],
+                server=database["host_from_host"],
+                port=database["port_from_host"],
+                database=database["db_name"],
+            )
+            cursor = conn.cursor()
+            cursor.execute("SELECT 'hello'")
+            conn.close()
+            break
+        except pymssql.OperationalError as e:  # pragma: no cover
+            if time.time() > limit:
+                raise Exception(
+                    f"Failed to connect to database after {timeout} seconds"
+                ) from e
+            time.sleep(1)
 
 
 def make_mssql_database(containers):
