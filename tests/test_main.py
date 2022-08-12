@@ -11,10 +11,9 @@ def test_parse_args(monkeypatch):
             "main.py",
             "--url",
             "dialect+driver://user:password@server:port/database",
-            "--input",
-            "query.sql",
             "--output-file",
             "results.csv",
+            "query.sql",
         ],
     )
 
