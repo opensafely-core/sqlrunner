@@ -5,6 +5,8 @@ from urllib import parse
 
 import pymssql
 
+from sqlrunner import __version__
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -23,6 +25,9 @@ def parse_args():
         required=True,
         type=pathlib.Path,
         help="Path to the output CSV file",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"sqlrunner {__version__}"
     )
     return parser.parse_args()
 
