@@ -104,6 +104,17 @@ fix: devenv
     $BIN/black .
     $BIN/isort .
 
+
+# build the sqlrunner docker image
+docker-build:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    [[ -v CI ]] && echo "::group::Build sqlrunner (click to view)" || echo "Build sqlrunner"
+    DOCKER_BUILDKIT=1 docker build . -t sqlrunner
+    [[ -v CI ]] && echo "::endgroup::" || echo ""
+
+
 # Run the dev project
 run: devenv
     echo "Not implemented yet"

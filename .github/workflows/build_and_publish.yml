@@ -1,0 +1,58 @@
+---
+name: Tag new version, build and publish Docker image
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    branches:
+      - main
+    types:
+      - completed
+
+env:
+  IMAGE_NAME: sqlrunner
+
+jobs:
+  tag-new-version:
+    name: Tag new version
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.tag.outputs.new_version }} # no prefix, may be `undefined`
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # all history
+      - id: tag
+        uses: mathieudutour/github-tag-action@d745f2e74aaf1ee82e747b181f7a0967978abee0 # v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          create_annotated_tag: true
+
+  build-and-publish-docker-image:
+    name: Build and publish Docker image
+    runs-on: ubuntu-latest
+    needs: tag-new-version
+    if: needs.tag-new-version.outputs.new_version
+    steps:
+      - uses: actions/checkout@v3
+      - uses: extractions/setup-just@aa5d15c144db4585980a44ebfdd2cf337c4f14cb # v1.4
+      - name: Set VERSION environment variable
+        run: echo VERSION=${{ needs.tag-new-version.outputs.new_version }} >> $GITHUB_ENV
+      - name: Write VERSION file
+        run: echo $VERSION > sqlrunner/VERSION
+      - name: Build image
+        run: just docker-build
+      - name: Test image
+        run: docker run --rm $IMAGE_NAME --help
+      - name: Log into GitHub Container Registry
+        run: docker login https://ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
+      - name: Push image to GitHub Container Registry
+        run: |
+          echo "VERSION=$VERSION"
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:latest
+          docker push $IMAGE_ID:$VERSION
