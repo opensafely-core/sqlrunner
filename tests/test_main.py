@@ -21,6 +21,19 @@ def test_parse_args():
     assert args.output == pathlib.Path("results.csv")
 
 
+def test_parse_args_with_defaults_from_environ(monkeypatch):
+    # act
+    args = main.parse_args(
+        ["--output", "results.csv", "query.sql"],
+        {"DATABASE_URL": "dialect+driver://user:password@server:port/database"},
+    )
+
+    # assert
+    assert args.dsn == "dialect+driver://user:password@server:port/database"
+    assert args.input == pathlib.Path("query.sql")
+    assert args.output == pathlib.Path("results.csv")
+
+
 def test_read_text(tmp_path):
     # arrange
     f_path = tmp_path / "query.sql"

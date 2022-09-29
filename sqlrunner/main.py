@@ -8,11 +8,12 @@ import pymssql
 from sqlrunner import __version__
 
 
-def parse_args(args):
+def parse_args(args, environ=None):
+    environ = environ or {}
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dsn",
-        required=True,
+        default=environ.get("DATABASE_URL"),
         help="Data Source Name",
     )
     parser.add_argument(
