@@ -8,7 +8,7 @@ import pymssql
 from sqlrunner import __version__
 
 
-def parse_args():
+def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dsn",
@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument(
         "--version", action="version", version=f"sqlrunner {__version__}"
     )
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
 def read_text(f_path):
