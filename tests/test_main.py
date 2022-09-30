@@ -3,22 +3,30 @@ import pathlib
 from sqlrunner import main
 
 
-def test_parse_args(monkeypatch):
-    # arrange
-    monkeypatch.setattr(
-        "sys.argv",
+def test_parse_args():
+    # act
+    args = main.parse_args(
         [
-            "main.py",
             "--dsn",
             "dialect+driver://user:password@server:port/database",
             "--output",
             "results.csv",
             "query.sql",
-        ],
+        ]
     )
 
+    # assert
+    assert args.dsn == "dialect+driver://user:password@server:port/database"
+    assert args.input == pathlib.Path("query.sql")
+    assert args.output == pathlib.Path("results.csv")
+
+
+def test_parse_args_with_defaults_from_environ(monkeypatch):
     # act
-    args = main.parse_args()
+    args = main.parse_args(
+        ["--output", "results.csv", "query.sql"],
+        {"DATABASE_URL": "dialect+driver://user:password@server:port/database"},
+    )
 
     # assert
     assert args.dsn == "dialect+driver://user:password@server:port/database"
