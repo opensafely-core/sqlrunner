@@ -70,4 +70,4 @@ FROM sqlrunner-base as sqlrunner
 ENTRYPOINT ["python", "-m", "sqlrunner"]
 
 # Copy the application code
-COPY . /app
+COPY sqlrunner /app/sqlrunner
