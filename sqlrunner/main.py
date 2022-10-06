@@ -44,8 +44,8 @@ def run_sql(*, dsn, sql_query):
     parsed_dsn = parse.urlparse(dsn)
 
     conn = pymssql.connect(
-        user=parsed_dsn.username,
-        password=parsed_dsn.password,
+        user=parse.unquote(parsed_dsn.username),
+        password=parse.unquote(parsed_dsn.password),
         server=parsed_dsn.hostname,
         port=parsed_dsn.port,
         database=parsed_dsn.path.strip("/"),
