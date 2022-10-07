@@ -37,20 +37,23 @@ def read_text(f_path):
     return f_path.read_text(encoding="utf-8")
 
 
+def parse_dsn(dsn):
+    parse_result = parse.urlparse(dsn)
+    return {
+        "user": parse.unquote(parse_result.username),
+        "password": parse.unquote(parse_result.password),
+        "server": parse_result.hostname,
+        "port": parse_result.port or 1433,
+        "database": parse_result.path.strip("/"),
+    }
+
+
 def run_sql(*, dsn, sql_query):
     # `dsn` is expected to follow RFC-1738, just as SQL Alchemy expects:
     # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
     # dialect+driver://username:password@host:port/database
-    parsed_dsn = parse.urlparse(dsn)
-
-    conn = pymssql.connect(
-        user=parse.unquote(parsed_dsn.username),
-        password=parse.unquote(parsed_dsn.password),
-        server=parsed_dsn.hostname,
-        port=parsed_dsn.port,
-        database=parsed_dsn.path.strip("/"),
-        as_dict=True,
-    )
+    parsed_dsn = parse_dsn(dsn)
+    conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
     cursor.execute(sql_query)
     results = cursor.fetchall()

@@ -1,5 +1,7 @@
 import pathlib
 
+import pytest
+
 from sqlrunner import main
 
 
@@ -44,6 +46,18 @@ def test_read_text(tmp_path):
 
     # assert
     assert sql_query == "SELECT 1 AS patient_id"
+
+
+@pytest.mark.parametrize(
+    "dsn,port",
+    [
+        ("dialect+driver://username:password@host/database", 1433),
+        ("dialect+driver://username:password@host:50161/database", 50161),
+    ],
+)
+def test_parse_dsn(dsn, port):
+    parsed_dsn = main.parse_dsn(dsn)
+    assert parsed_dsn["port"] == port
 
 
 def test_run_sql(mssql_database):
