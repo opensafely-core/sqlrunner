@@ -21,6 +21,7 @@ def test_parse_args():
     assert args.dsn == "dialect+driver://user:password@server:port/database"
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
+    assert args.dummy_data_file is None
 
 
 def test_parse_args_with_defaults_from_environ(monkeypatch):
@@ -34,6 +35,7 @@ def test_parse_args_with_defaults_from_environ(monkeypatch):
     assert args.dsn == "dialect+driver://user:password@server:port/database"
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
+    assert args.dummy_data_file is None
 
 
 def test_read_text(tmp_path):
@@ -87,3 +89,23 @@ def test_write_results(tmp_path):
 
     # assert
     assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
+
+
+@pytest.mark.parametrize(
+    "dummy_data_fname,results_fname",
+    [
+        ("results.csv", "results.csv"),
+        ("dummy_data_file.csv", "results.csv"),
+    ],
+)
+def test_write_results_from_dummy_data_file(dummy_data_fname, results_fname, tmp_path):
+    # arrange
+    dummy_data_file = tmp_path / dummy_data_fname
+    dummy_data_file.write_text("id\n1\n2\n", encoding="utf-8")
+    results_file = tmp_path / results_fname
+
+    # act
+    main.write_results(dummy_data_file, results_file)
+
+    # assert
+    assert results_file.read_text(encoding="utf-8") == "id\n1\n2\n"

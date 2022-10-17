@@ -1,6 +1,8 @@
 import argparse
 import csv
+import functools
 import pathlib
+import shutil
 from urllib import parse
 
 import pymssql
@@ -26,6 +28,11 @@ def parse_args(args, environ=None):
         required=True,
         type=pathlib.Path,
         help="Path to the output CSV file",
+    )
+    parser.add_argument(
+        "--dummy-data-file",
+        type=pathlib.Path,
+        help="Path to the input dummy data file to be used as the output CSV file",
     )
     parser.add_argument(
         "--version", action="version", version=f"sqlrunner {__version__}"
@@ -62,9 +69,18 @@ def run_sql(*, dsn, sql_query):
     return results
 
 
+@functools.singledispatch
 def write_results(results, f_path):
     fieldnames = results[0].keys()
     with f_path.open(mode="w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames)
         writer.writeheader()
         writer.writerows(results)
+
+
+@write_results.register
+def _(results: pathlib.Path, f_path):
+    try:
+        shutil.copy(results, f_path)
+    except shutil.SameFileError:
+        pass
