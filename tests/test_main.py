@@ -91,6 +91,15 @@ def test_write_results(tmp_path):
     assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
 
 
+def test_write_results_with_zero_results(tmp_path):
+    # arrange
+    f_path = tmp_path / "results.csv"
+
+    # act
+    with pytest.raises(IndexError):
+        main.write_results([], f_path)
+
+
 @pytest.mark.parametrize(
     "dummy_data_fname,results_fname",
     [
