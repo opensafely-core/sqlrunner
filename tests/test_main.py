@@ -80,6 +80,20 @@ def test_run_sql(mssql_database):
     assert results == [{"patient_id": 1}]
 
 
+@pytest.fixture(params=["", "subdir"])
+def output_path(tmp_path, request):
+    """Returns a temporary output path object. If the value of request.param is the
+    empty string, then this object will exist (it will be equivalent to tmp_path). If
+    not, then it won't.
+
+    This fixture helps us to test two cases. Namely, when SQL Runner writes:
+    to the default output directory, which is usually checked-in and so usually exists;
+    to a sub-directory of the default output directory, which isn't usually checked-in
+    and so doesn't usually exist.
+    """
+    return tmp_path / request.param
+
+
 @pytest.mark.parametrize(
     "results,csv_string",
     [
@@ -87,9 +101,9 @@ def test_run_sql(mssql_database):
         ([], ""),  # zero results
     ],
 )
-def test_write_results(tmp_path, results, csv_string):
+def test_write_results(output_path, results, csv_string):
     # arrange
-    f_path = tmp_path / "results.csv"
+    f_path = output_path / "results.csv"
 
     # act
     main.write_results(results, f_path)
@@ -103,6 +117,7 @@ def test_write_results(tmp_path, results, csv_string):
     [
         ("results.csv", "results.csv"),
         ("dummy_data_file.csv", "results.csv"),
+        ("results.csv", "subdir/results.csv"),
     ],
 )
 def test_write_results_from_dummy_data_file(dummy_data_fname, results_fname, tmp_path):
