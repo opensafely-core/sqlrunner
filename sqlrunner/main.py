@@ -94,8 +94,8 @@ def write_results(results, f_path):
 
 @write_results.register
 def _(results: pathlib.Path, f_path):
+    if f_path.exists() and f_path.samefile(results):
+        return
+
     touch(f_path)
-    try:
-        shutil.copy(results, f_path)
-    except shutil.SameFileError:
-        pass
+    shutil.copy(results, f_path)
