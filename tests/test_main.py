@@ -96,8 +96,10 @@ def test_write_results_with_zero_results(tmp_path):
     f_path = tmp_path / "results.csv"
 
     # act
-    with pytest.raises(IndexError):
-        main.write_results([], f_path)
+    main.write_results([], f_path)
+
+    # assert
+    assert f_path.read_text(encoding="utf-8") == ""
 
 
 @pytest.mark.parametrize(

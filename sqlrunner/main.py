@@ -71,6 +71,14 @@ def run_sql(*, dsn, sql_query):
 
 @functools.singledispatch
 def write_results(results, f_path):
+    if len(results) == 0:
+        # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
+        # Runner action will fail. A user won't know whether their query returns any
+        # results, so to avoid the SQL Runner action failing, we write an empty output
+        # CSV file.
+        f_path.touch()
+        return
+
     fieldnames = results[0].keys()
     with f_path.open(mode="w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames)
