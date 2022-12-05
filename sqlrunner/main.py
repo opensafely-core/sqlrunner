@@ -69,14 +69,20 @@ def run_sql(*, dsn, sql_query):
     return results
 
 
+def touch(f_path):
+    f_path.parent.mkdir(parents=True, exist_ok=True)
+    f_path.touch()
+
+
 @functools.singledispatch
 def write_results(results, f_path):
+    # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
+    # Runner action will fail. A user won't know whether their query returns any
+    # results, so to avoid the SQL Runner action failing, we write an empty output CSV
+    # file.
+    touch(f_path)
+
     if len(results) == 0:
-        # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
-        # Runner action will fail. A user won't know whether their query returns any
-        # results, so to avoid the SQL Runner action failing, we write an empty output
-        # CSV file.
-        f_path.touch()
         return
 
     fieldnames = results[0].keys()
@@ -88,6 +94,7 @@ def write_results(results, f_path):
 
 @write_results.register
 def _(results: pathlib.Path, f_path):
+    touch(f_path)
     try:
         shutil.copy(results, f_path)
     except shutil.SameFileError:
