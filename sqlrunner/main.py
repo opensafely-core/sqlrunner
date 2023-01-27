@@ -1,6 +1,7 @@
 import argparse
 import csv
 import functools
+import itertools
 import pathlib
 import shutil
 from urllib import parse
@@ -63,10 +64,8 @@ def run_sql(*, dsn, sql_query):
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
     cursor.execute(sql_query)
-    results = cursor.fetchall()
+    yield from cursor
     conn.close()
-
-    return results
 
 
 def touch(f_path):
@@ -82,14 +81,16 @@ def write_results(results, f_path):
     # file.
     touch(f_path)
 
-    if len(results) == 0:
+    try:
+        first_result = next(results)
+    except StopIteration:
         return
 
-    fieldnames = results[0].keys()
+    fieldnames = first_result.keys()
     with f_path.open(mode="w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames)
         writer.writeheader()
-        writer.writerows(results)
+        writer.writerows(itertools.chain([first_result], results))
 
 
 @write_results.register
