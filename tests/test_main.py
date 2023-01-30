@@ -77,7 +77,7 @@ def test_run_sql(mssql_database):
     results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
 
     # assert
-    assert results == [{"patient_id": 1}]
+    assert list(results) == [{"patient_id": 1}]
 
 
 @pytest.fixture(params=["", "subdir"])
@@ -106,7 +106,7 @@ def test_write_results(output_path, results, csv_string):
     f_path = output_path / "results.csv"
 
     # act
-    main.write_results(results, f_path)
+    main.write_results(iter(results), f_path)  # `results` should be an iterator
 
     # assert
     assert f_path.read_text(encoding="utf-8") == csv_string
