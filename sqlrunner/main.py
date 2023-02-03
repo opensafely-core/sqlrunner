@@ -1,6 +1,7 @@
 import argparse
 import csv
 import functools
+import gzip
 import itertools
 import pathlib
 import shutil
@@ -35,6 +36,7 @@ def parse_args(args, environ=None):
         type=pathlib.Path,
         help="Path to the input dummy data file to be used as the output CSV file",
     )
+
     parser.add_argument(
         "--version", action="version", version=f"sqlrunner {__version__}"
     )
@@ -87,10 +89,18 @@ def write_results(results, f_path):
         return
 
     fieldnames = first_result.keys()
-    with f_path.open(mode="w", newline="", encoding="utf-8") as f:
+
+    if f_path.suffixes == [".csv", ".gz"]:
+        f = gzip.open(f_path, "wt", newline="", encoding="utf-8", compresslevel=6)
+    else:
+        f = f_path.open(mode="w", newline="", encoding="utf-8")
+
+    try:
         writer = csv.DictWriter(f, fieldnames)
         writer.writeheader()
         writer.writerows(itertools.chain([first_result], results))
+    finally:
+        f.close()
 
 
 @write_results.register

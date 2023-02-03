@@ -1,3 +1,4 @@
+import gzip
 import pathlib
 
 import pytest
@@ -110,6 +111,18 @@ def test_write_results(output_path, results, csv_string):
 
     # assert
     assert f_path.read_text(encoding="utf-8") == csv_string
+
+
+def test_write_results_compressed(output_path):
+    # arrange
+    f_path = output_path / "results.csv.gz"
+    results = [{"id": 1}, {"id": 2}]
+
+    # act
+    main.write_results(iter(results), f_path)
+
+    # assert
+    assert gzip.open(f_path, "rt").read() == "id\n1\n2\n"
 
 
 @pytest.mark.parametrize(
