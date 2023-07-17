@@ -135,9 +135,9 @@ flake8-implicit-str-concat==0.4.0 \
     --hash=sha256:b6acf233afee943dc1802ef4bc242a19f0419fac9943739e235d3f2aaf616361 \
     --hash=sha256:b91805a3e0ff30ae2890830548478af25c79a4a579ec402a6ba3538043dff60c
     # via -r requirements.dev.in
-flake8-no-pep420==2.6.0 \
-    --hash=sha256:8174794e2ae79e8c76d520dfe5ab897c9830e908aa710731a069ab5fdbff24d9 \
-    --hash=sha256:e4b0b469e087e40ea0f53cabf4b23f085dff095ba2f0dfe3d4f011de2f05d461
+flake8-no-pep420==2.7.0 \
+    --hash=sha256:018bbe0fba039444689d02a0857310b62b90ff9bf737aff27e0b847ec7eb9ba3 \
+    --hash=sha256:a1b6db4de355b87f8189714e68785a7c6a2d61d94f3e937b6cee336953f7d703
     # via -r requirements.dev.in
 identify==2.2.11 \
     --hash=sha256:7abaecbb414e385752e8ce02d8c494f4fbc780c975074b46172598a28f1ab839 \
