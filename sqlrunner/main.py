@@ -103,8 +103,10 @@ def write_results(results, f_path):
 
     try:
         writer = csv.DictWriter(f, fieldnames)
+        log.info("start_writing_results")
         writer.writeheader()
         writer.writerows(itertools.chain([first_result], results))
+        log.info("finish_writing_results")
     finally:
         f.close()
 
