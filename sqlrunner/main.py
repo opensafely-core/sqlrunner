@@ -8,8 +8,12 @@ import shutil
 from urllib import parse
 
 import pymssql
+import structlog
 
 from sqlrunner import __version__
+
+
+log = structlog.get_logger()
 
 
 def parse_args(args, environ=None):
@@ -65,7 +69,9 @@ def run_sql(*, dsn, sql_query):
     parsed_dsn = parse_dsn(dsn)
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
+    log.info("start_executing_sql_query")
     cursor.execute(sql_query)
+    log.info("finish_executing_sql_query")
     yield from cursor
     conn.close()
 

@@ -63,7 +63,7 @@ def test_parse_dsn(dsn, port):
     assert parsed_dsn["port"] == port
 
 
-def test_run_sql(mssql_database):
+def test_run_sql(mssql_database, log_output):
     # arrange
     dialect = "mssql"
     driver = "pymssql"
@@ -79,6 +79,10 @@ def test_run_sql(mssql_database):
 
     # assert
     assert list(results) == [{"patient_id": 1}]
+    assert log_output.entries == [
+        {"event": "start_executing_sql_query", "log_level": "info"},
+        {"event": "finish_executing_sql_query", "log_level": "info"},
+    ]
 
 
 @pytest.fixture(params=["", "subdir"])
