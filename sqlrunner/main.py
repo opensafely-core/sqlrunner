@@ -40,7 +40,11 @@ def parse_args(args, environ=None):
         type=pathlib.Path,
         help="Path to the input dummy data file to be used as the output CSV file",
     )
-
+    parser.add_argument(
+        "--log-file",
+        type=pathlib.Path,
+        help="Path to the log file",
+    )
     parser.add_argument(
         "--version", action="version", version=f"sqlrunner {__version__}"
     )

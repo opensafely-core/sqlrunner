@@ -23,6 +23,7 @@ def test_parse_args():
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
     assert args.dummy_data_file is None
+    assert args.log_file is None
 
 
 def test_parse_args_with_defaults_from_environ(monkeypatch):
