@@ -23,6 +23,7 @@ def test_parse_args():
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
     assert args.dummy_data_file is None
+    assert args.log_file is None
 
 
 def test_parse_args_with_defaults_from_environ(monkeypatch):
@@ -63,7 +64,7 @@ def test_parse_dsn(dsn, port):
     assert parsed_dsn["port"] == port
 
 
-def test_run_sql(mssql_database):
+def test_run_sql(mssql_database, log_output):
     # arrange
     dialect = "mssql"
     driver = "pymssql"
@@ -79,6 +80,10 @@ def test_run_sql(mssql_database):
 
     # assert
     assert list(results) == [{"patient_id": 1}]
+    assert log_output.entries == [
+        {"event": "start_executing_sql_query", "log_level": "info"},
+        {"event": "finish_executing_sql_query", "log_level": "info"},
+    ]
 
 
 @pytest.fixture(params=["", "subdir"])
@@ -95,22 +100,30 @@ def output_path(tmp_path, request):
     return tmp_path / request.param
 
 
-@pytest.mark.parametrize(
-    "results,csv_string",
-    [
-        ([{"id": 1}, {"id": 2}], "id\n1\n2\n"),
-        ([], ""),  # zero results
-    ],
-)
-def test_write_results(output_path, results, csv_string):
+def test_write_zero_results(output_path):
     # arrange
     f_path = output_path / "results.csv"
 
     # act
-    main.write_results(iter(results), f_path)  # `results` should be an iterator
+    main.write_results(iter([]), f_path)
 
     # assert
-    assert f_path.read_text(encoding="utf-8") == csv_string
+    assert f_path.read_text(encoding="utf-8") == ""
+
+
+def test_write_results(output_path, log_output):
+    # arrange
+    f_path = output_path / "results.csv"
+
+    # act
+    main.write_results(iter([{"id": 1}, {"id": 2}]), f_path)
+
+    # assert
+    assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
+    assert log_output.entries == [
+        {"event": "start_writing_results", "log_level": "info"},
+        {"event": "finish_writing_results", "log_level": "info"},
+    ]
 
 
 def test_write_results_compressed(output_path):

@@ -1,10 +1,45 @@
+import logging
 import os
 import sys
+
+import structlog
 
 from sqlrunner import main
 
 
 args = main.parse_args(sys.argv[1:], os.environ)
+
+handlers = [logging.StreamHandler(sys.stdout)]
+if args.log_file is not None:
+    handlers.append(logging.FileHandler(args.log_file, "w"))
+logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
+
+# Configure structlog to output structured logs in JSON format. For more information,
+# see:
+# https://www.structlog.org/en/stable/standard-library.html#rendering-within-structlog
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.CallsiteParameterAdder(
+            {
+                structlog.processors.CallsiteParameter.FILENAME,
+                structlog.processors.CallsiteParameter.FUNC_NAME,
+                structlog.processors.CallsiteParameter.LINENO,
+            }
+        ),
+        structlog.processors.JSONRenderer(),
+    ],
+    wrapper_class=structlog.stdlib.BoundLogger,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+)
+
 if args.dsn is None and args.dummy_data_file is not None:
     # Bypass the database
     results = args.dummy_data_file

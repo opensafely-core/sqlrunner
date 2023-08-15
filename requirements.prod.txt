@@ -38,3 +38,7 @@ pymssql==2.2.8 \
     --hash=sha256:e920d6f805a525f19e770e48326a5f96b83d7b8dfd093f5b7015b54ef84bcf4c \
     --hash=sha256:ebe7f64d5278d807f14bea08951e02512bfbc6219fd4d4f15bb45ded885cf3d4
     # via -r requirements.prod.in
+structlog==23.1.0 \
+    --hash=sha256:270d681dd7d163c11ba500bc914b2472d2b50a8ef00faa999ded5ff83a2f906b \
+    --hash=sha256:79b9e68e48b54e373441e130fa447944e6f87a05b35de23138e475c05d0f7e0e
+    # via -r requirements.prod.in
