@@ -73,18 +73,16 @@ def test_run_sql(mssql_database, log_output):
     ]
 
 
-@pytest.fixture(params=["", "subdir"])
+@pytest.fixture(params=[None, "subdir"])
 def output_path(tmp_path, request):
-    """Returns a temporary output path object. If the value of request.param is the
-    empty string, then this object will exist (it will be equivalent to tmp_path). If
-    not, then it won't.
+    """Returns a temporary output path object.
 
     This fixture helps us to test two cases. Namely, when SQL Runner writes:
     to the default output directory, which is usually checked-in and so usually exists;
     to a sub-directory of the default output directory, which isn't usually checked-in
     and so doesn't usually exist.
     """
-    return tmp_path / request.param
+    return tmp_path if request.param is None else tmp_path / request.param
 
 
 def test_write_zero_results(output_path):
