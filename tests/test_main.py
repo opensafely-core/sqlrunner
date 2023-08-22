@@ -7,7 +7,6 @@ from sqlrunner import main
 
 
 def test_parse_args():
-    # act
     args = main.parse_args(
         [
             "--dsn",
@@ -17,8 +16,6 @@ def test_parse_args():
             "query.sql",
         ]
     )
-
-    # assert
     assert args.dsn == "dialect+driver://user:password@server:port/database"
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
@@ -27,13 +24,10 @@ def test_parse_args():
 
 
 def test_parse_args_with_defaults_from_environ(monkeypatch):
-    # act
     args = main.parse_args(
         ["--output", "results.csv", "query.sql"],
         {"DATABASE_URL": "dialect+driver://user:password@server:port/database"},
     )
-
-    # assert
     assert args.dsn == "dialect+driver://user:password@server:port/database"
     assert args.input == pathlib.Path("query.sql")
     assert args.output == pathlib.Path("results.csv")
@@ -42,14 +36,9 @@ def test_parse_args_with_defaults_from_environ(monkeypatch):
 
 
 def test_read_text(tmp_path):
-    # arrange
     f_path = tmp_path / "query.sql"
     f_path.write_text("SELECT 1 AS patient_id", "utf-8")
-
-    # act
     sql_query = main.read_text(f_path)
-
-    # assert
     assert sql_query == "SELECT 1 AS patient_id"
 
 
@@ -66,7 +55,6 @@ def test_parse_dsn(dsn, port):
 
 
 def test_run_sql(mssql_database, log_output):
-    # arrange
     dialect = "mssql"
     driver = "pymssql"
     user = mssql_database["username"]
@@ -76,10 +64,8 @@ def test_run_sql(mssql_database, log_output):
     database = mssql_database["db_name"]
     dsn = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
 
-    # act
     results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
 
-    # assert
     assert list(results) == [{"patient_id": 1}]
     assert log_output.entries == [
         {"event": "start_executing_sql_query", "log_level": "info"},
@@ -102,24 +88,14 @@ def output_path(tmp_path, request):
 
 
 def test_write_zero_results(output_path):
-    # arrange
     f_path = output_path / "results.csv"
-
-    # act
     main.write_results(iter([]), f_path)
-
-    # assert
     assert f_path.read_text(encoding="utf-8") == ""
 
 
 def test_write_results_uncompressed(output_path, log_output):
-    # arrange
     f_path = output_path / "results.csv"
-
-    # act
     main.write_results(iter([{"id": 1}, {"id": 2}]), f_path)
-
-    # assert
     assert f_path.read_text(encoding="utf-8") == "id\n1\n2\n"
     assert log_output.entries == [
         {"event": "start_writing_results", "log_level": "info"},
@@ -128,14 +104,9 @@ def test_write_results_uncompressed(output_path, log_output):
 
 
 def test_write_results_compressed(output_path):
-    # arrange
     f_path = output_path / "results.csv.gz"
     results = [{"id": 1}, {"id": 2}]
-
-    # act
     main.write_results(iter(results), f_path)
-
-    # assert
     assert gzip.open(f_path, "rt").read() == "id\n1\n2\n"
 
 
@@ -148,13 +119,8 @@ def test_write_results_compressed(output_path):
     ],
 )
 def test_write_results_from_dummy_data_file(dummy_data_fname, results_fname, tmp_path):
-    # arrange
     dummy_data_file = tmp_path / dummy_data_fname
     dummy_data_file.write_text("id\n1\n2\n", encoding="utf-8")
     results_file = tmp_path / results_fname
-
-    # act
     main.write_results(dummy_data_file, results_file)
-
-    # assert
     assert results_file.read_text(encoding="utf-8") == "id\n1\n2\n"
