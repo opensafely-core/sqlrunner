@@ -112,7 +112,7 @@ def test_write_zero_results(output_path):
     assert f_path.read_text(encoding="utf-8") == ""
 
 
-def test_write_results(output_path, log_output):
+def test_write_results_uncompressed(output_path, log_output):
     # arrange
     f_path = output_path / "results.csv"
 
