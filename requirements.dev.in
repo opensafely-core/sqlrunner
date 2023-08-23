@@ -5,13 +5,9 @@
 # pip-compile --generate-hashes --output-file=requirements.dev.txt requirements.dev.in
 
 black
+coverage
 docker
-flake8
-flake8-builtins
-flake8-implicit-str-concat
-flake8-no-pep420
-isort
 pip-tools
 pre-commit
 pytest
-pytest-cov
+ruff
