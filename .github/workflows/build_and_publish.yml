@@ -20,7 +20,7 @@ jobs:
     outputs:
       new_version: ${{ steps.tag.outputs.new_version }} # no prefix, may be `undefined`
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # all history
       - id: tag
@@ -35,7 +35,7 @@ jobs:
     needs: tag-new-version
     if: needs.tag-new-version.outputs.new_version
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: extractions/setup-just@69d82fb0233557aec017ef13706851d0694e0f1d # v1.6.0
       - name: Set VERSION environment variable
         run: echo VERSION=${{ needs.tag-new-version.outputs.new_version }} >> $GITHUB_ENV
