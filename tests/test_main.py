@@ -54,7 +54,8 @@ def test_parse_dsn(dsn, port):
     assert parsed_dsn["port"] == port
 
 
-def test_run_sql(mssql_database, log_output):
+@pytest.fixture
+def dsn(mssql_database):
     dialect = "mssql"
     driver = "pymssql"
     user = mssql_database["username"]
@@ -63,7 +64,10 @@ def test_run_sql(mssql_database, log_output):
     port = mssql_database["port_from_host"]
     database = mssql_database["db_name"]
     dsn = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
+    return dsn
 
+
+def test_run_sql(dsn, log_output):
     results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
 
     assert list(results) == [{"patient_id": 1}]
