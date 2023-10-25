@@ -3,7 +3,7 @@ import pathlib
 
 import pytest
 
-from sqlrunner import main
+from sqlrunner import T100S_TABLE, main
 
 
 def test_parse_args():
@@ -43,6 +43,54 @@ def test_read_text(tmp_path):
 
 
 @pytest.mark.parametrize(
+    "sql_query,are_t100s_handled",
+    [
+        # not handled by query
+        (
+            """
+                SELECT Patient_ID FROM Patient
+            """,
+            False,
+        ),
+        # handled by query
+        (
+            f"""
+                SELECT Patient_ID FROM Patient
+                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T100S_TABLE})
+            """,
+            True,
+        ),
+        # not handled by comment
+        (
+            """
+                -- t100s intentionally not excluded
+                SELECT Patient_ID FROM Patient
+            """,
+            False,
+        ),
+        # handled by comment
+        (
+            f"""
+                -- {T100S_TABLE} intentionally not excluded
+                SELECT Patient_ID FROM Patient
+            """,
+            True,
+        ),
+        # handled by query, but undesirable: it's hard to prevent this with a "light
+        # touch" approach
+        (
+            f"""
+                SELECT Patient_ID FROM {T100S_TABLE}
+             """,
+            True,
+        ),
+    ],
+)
+def test_are_t100s_handled(sql_query, are_t100s_handled):
+    assert main.are_t100s_handled(sql_query) == are_t100s_handled
+
+
+@pytest.mark.parametrize(
     "dsn,port",
     [
         ("dialect+driver://username:password@host/database", 1433),
@@ -67,14 +115,24 @@ def dsn(mssql_database):
     return dsn
 
 
-def test_run_sql(dsn, log_output):
-    results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
+def test_run_sql_t1oos_handled(dsn, log_output):
+    sql_query = f"""
+        -- {T100S_TABLE} intentionally not excluded
+        SELECT 1 AS patient_id
+    """
+    results = main.run_sql(dsn=dsn, sql_query=sql_query)
 
     assert list(results) == [{"patient_id": 1}]
     assert log_output.entries == [
         {"event": "start_executing_sql_query", "log_level": "info"},
         {"event": "finish_executing_sql_query", "log_level": "info"},
     ]
+
+
+def test_run_sql_t1oos_not_handled(dsn):
+    with pytest.raises(RuntimeError):
+        results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
+        next(results)
 
 
 @pytest.fixture(params=[None, "subdir"])
