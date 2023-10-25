@@ -2,27 +2,23 @@ default_language_version:
   python: python3.10
 
 repos:
-  - repo: https://github.com/psf/black
-    rev: 23.7.0
+  - repo: local
     hooks:
     - id: black
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-    - id: flake8
-      additional_dependencies:
-      - "flake8-builtins"
-      - "flake8-implicit-str-concat"
-      - "flake8-no-pep420"
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-    - id: isort
+      name: black
+      entry: just black
+      language: system
+      types: [python]
+      require_serial: true
+    - id: ruff
+      name: ruff
+      entry: just ruff
+      language: system
+      types: [python]
+      require_serial: true
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.1.0
     hooks:
     - id: trailing-whitespace
     - id: end-of-file-fixer
@@ -34,6 +30,6 @@ repos:
     - id: detect-private-key
 
   - repo: https://github.com/stratasan/hadolint-pre-commit
-    rev: cdefcb096e520a6daa9552b1d4636f5f1e1729cd
+    rev: cdefcb0
     hooks:
     - id: hadolint
