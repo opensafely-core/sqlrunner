@@ -102,19 +102,6 @@ def test_parse_dsn(dsn, port):
     assert parsed_dsn["port"] == port
 
 
-@pytest.fixture
-def dsn(mssql_database):
-    dialect = "mssql"
-    driver = "pymssql"
-    user = mssql_database["username"]
-    password = mssql_database["password"]
-    server = mssql_database["host_from_host"]
-    port = mssql_database["port_from_host"]
-    database = mssql_database["db_name"]
-    dsn = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
-    return dsn
-
-
 def test_run_sql_t1oos_handled(dsn, log_output):
     sql_query = f"""
         -- {T100S_TABLE} intentionally not excluded
