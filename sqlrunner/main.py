@@ -1,4 +1,3 @@
-import argparse
 import csv
 import functools
 import gzip
@@ -10,45 +9,10 @@ from urllib import parse
 import pymssql
 import structlog
 
-from sqlrunner import T100S_TABLE, __version__
+from sqlrunner import T100S_TABLE
 
 
 log = structlog.get_logger()
-
-
-def parse_args(args, environ=None):
-    environ = environ or {}
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--dsn",
-        default=environ.get("DATABASE_URL"),
-        help="Data Source Name",
-    )
-    parser.add_argument(
-        "input",
-        type=pathlib.Path,
-        help="Path to the input SQL file",
-    )
-    parser.add_argument(
-        "--output",
-        required=True,
-        type=pathlib.Path,
-        help="Path to the output CSV file",
-    )
-    parser.add_argument(
-        "--dummy-data-file",
-        type=pathlib.Path,
-        help="Path to the input dummy data file to be used as the output CSV file",
-    )
-    parser.add_argument(
-        "--log-file",
-        type=pathlib.Path,
-        help="Path to the log file",
-    )
-    parser.add_argument(
-        "--version", action="version", version=f"sqlrunner {__version__}"
-    )
-    return parser.parse_args(args)
 
 
 def read_text(f_path):

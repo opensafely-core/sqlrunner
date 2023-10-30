@@ -1,10 +1,12 @@
+import argparse
 import logging
 import os
+import pathlib
 import sys
 
 import structlog
 
-from sqlrunner import main
+from sqlrunner import __version__, main
 
 
 # Configure structlog to output structured logs in JSON format. For more information,
@@ -34,8 +36,42 @@ structlog.configure(
 )
 
 
+def parse_args(args, environ):
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dsn",
+        default=environ.get("DATABASE_URL"),
+        help="Data Source Name",
+    )
+    parser.add_argument(
+        "input",
+        type=pathlib.Path,
+        help="Path to the input SQL file",
+    )
+    parser.add_argument(
+        "--output",
+        required=True,
+        type=pathlib.Path,
+        help="Path to the output CSV file",
+    )
+    parser.add_argument(
+        "--dummy-data-file",
+        type=pathlib.Path,
+        help="Path to the input dummy data file to be used as the output CSV file",
+    )
+    parser.add_argument(
+        "--log-file",
+        type=pathlib.Path,
+        help="Path to the log file",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"sqlrunner {__version__}"
+    )
+    return parser.parse_args(args)
+
+
 def entrypoint():
-    args = main.parse_args(sys.argv[1:], os.environ)
+    args = parse_args(sys.argv[1:], os.environ)
 
     handlers = [logging.StreamHandler(sys.stdout)]
     # This is covered indirectly by a test.

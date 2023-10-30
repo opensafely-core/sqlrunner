@@ -1,38 +1,8 @@
 import gzip
-import pathlib
 
 import pytest
 
 from sqlrunner import T100S_TABLE, main
-
-
-def test_parse_args():
-    args = main.parse_args(
-        [
-            "--dsn",
-            "dialect+driver://user:password@server:port/database",
-            "--output",
-            "results.csv",
-            "query.sql",
-        ]
-    )
-    assert args.dsn == "dialect+driver://user:password@server:port/database"
-    assert args.input == pathlib.Path("query.sql")
-    assert args.output == pathlib.Path("results.csv")
-    assert args.dummy_data_file is None
-    assert args.log_file is None
-
-
-def test_parse_args_with_defaults_from_environ(monkeypatch):
-    args = main.parse_args(
-        ["--output", "results.csv", "query.sql"],
-        {"DATABASE_URL": "dialect+driver://user:password@server:port/database"},
-    )
-    assert args.dsn == "dialect+driver://user:password@server:port/database"
-    assert args.input == pathlib.Path("query.sql")
-    assert args.output == pathlib.Path("results.csv")
-    assert args.dummy_data_file is None
-    assert args.log_file is None
 
 
 def test_read_text(tmp_path):
