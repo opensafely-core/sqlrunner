@@ -7,13 +7,6 @@ import structlog
 from sqlrunner import main
 
 
-args = main.parse_args(sys.argv[1:], os.environ)
-
-handlers = [logging.StreamHandler(sys.stdout)]
-if args.log_file is not None:
-    handlers.append(logging.FileHandler(args.log_file, "w"))
-logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
-
 # Configure structlog to output structured logs in JSON format. For more information,
 # see:
 # https://www.structlog.org/en/stable/standard-library.html#rendering-within-structlog
@@ -40,10 +33,24 @@ structlog.configure(
     logger_factory=structlog.stdlib.LoggerFactory(),
 )
 
-if args.dsn is None and args.dummy_data_file is not None:
-    # Bypass the database
-    results = args.dummy_data_file
-else:
-    sql_query = main.read_text(args.input)
-    results = main.run_sql(dsn=args.dsn, sql_query=sql_query)
-main.write_results(results, args.output)
+
+def entrypoint():
+    args = main.parse_args(sys.argv[1:], os.environ)
+
+    handlers = [logging.StreamHandler(sys.stdout)]
+    # This is covered indirectly by a test.
+    if args.log_file is not None:  # pragma: no cover
+        handlers.append(logging.FileHandler(args.log_file, "w"))
+    logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
+
+    if args.dsn is None and args.dummy_data_file is not None:
+        # Bypass the database
+        results = args.dummy_data_file
+    else:
+        sql_query = main.read_text(args.input)
+        results = main.run_sql(dsn=args.dsn, sql_query=sql_query)
+    main.write_results(results, args.output)
+
+
+if __name__ == "__main__":
+    entrypoint()  # pragma: no cover
