@@ -5,6 +5,13 @@ import pytest
 from sqlrunner import T1OOS_TABLE, main
 
 
+def test_main_with_t1oos_not_handled(tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text("SELECT Patient_ID FROM Patient", "utf-8")
+    with pytest.raises(RuntimeError):
+        main.main({"input": input_})
+
+
 def test_main_with_dummy_data_file(tmp_path):
     input_ = tmp_path / "query.sql"
     input_.write_text(
@@ -23,13 +30,6 @@ def test_main_with_dummy_data_file(tmp_path):
         }
     )
     assert output.read_text("utf-8") == "patient_id\n1\n"
-
-
-def test_main_with_t1oos_not_handled(tmp_path):
-    input_ = tmp_path / "query.sql"
-    input_.write_text("SELECT Patient_ID FROM Patient", "utf-8")
-    with pytest.raises(RuntimeError):
-        main.main({"input": input_})
 
 
 @pytest.mark.parametrize(
