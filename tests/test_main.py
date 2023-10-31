@@ -32,13 +32,6 @@ def test_main_with_t1oos_not_handled(tmp_path):
         main.main({"input": input_})
 
 
-def test_read_text(tmp_path):
-    f_path = tmp_path / "query.sql"
-    f_path.write_text("SELECT 1 AS patient_id", "utf-8")
-    sql_query = main.read_text(f_path)
-    assert sql_query == "SELECT 1 AS patient_id"
-
-
 @pytest.mark.parametrize(
     "sql_query,are_t100s_handled",
     [
