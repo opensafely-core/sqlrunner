@@ -2,13 +2,13 @@ import gzip
 
 import pytest
 
-from sqlrunner import T100S_TABLE, main
+from sqlrunner import T1OOS_TABLE, main
 
 
 def test_main_with_dummy_data_file(tmp_path):
     input_ = tmp_path / "query.sql"
     input_.write_text(
-        f"-- {T100S_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
+        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
         "utf-8",
     )
     dummy_data_file = tmp_path / "dummy_data.csv"
@@ -33,7 +33,7 @@ def test_main_with_t1oos_not_handled(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "sql_query,are_t100s_handled",
+    "sql_query,are_t1oos_handled",
     [
         # not handled by query
         (
@@ -46,7 +46,7 @@ def test_main_with_t1oos_not_handled(tmp_path):
         (
             f"""
                 SELECT Patient_ID FROM Patient
-                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T100S_TABLE})
+                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T1OOS_TABLE})
             """,
             True,
         ),
@@ -61,7 +61,7 @@ def test_main_with_t1oos_not_handled(tmp_path):
         # handled by comment
         (
             f"""
-                -- {T100S_TABLE} intentionally not excluded
+                -- {T1OOS_TABLE} intentionally not excluded
                 SELECT Patient_ID FROM Patient
             """,
             True,
@@ -70,14 +70,14 @@ def test_main_with_t1oos_not_handled(tmp_path):
         # touch" approach
         (
             f"""
-                SELECT Patient_ID FROM {T100S_TABLE}
+                SELECT Patient_ID FROM {T1OOS_TABLE}
              """,
             True,
         ),
     ],
 )
-def test_are_t100s_handled(sql_query, are_t100s_handled):
-    assert main.are_t100s_handled(sql_query) == are_t100s_handled
+def test_are_t1oos_handled(sql_query, are_t1oos_handled):
+    assert main.are_t1oos_handled(sql_query) == are_t1oos_handled
 
 
 @pytest.mark.parametrize(

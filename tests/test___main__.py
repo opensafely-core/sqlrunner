@@ -1,13 +1,13 @@
 import pathlib
 
-from sqlrunner import T100S_TABLE
+from sqlrunner import T1OOS_TABLE
 from sqlrunner.__main__ import entrypoint
 
 
 def test_entrypoint(monkeypatch, tmp_path, dsn):
     monkeypatch.chdir(tmp_path)
     pathlib.Path("input.sql").write_text(
-        f"-- {T100S_TABLE} intentionally not excluded\nSELECT 1 AS patient_id",
+        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT 1 AS patient_id",
         "utf-8",
     )
     monkeypatch.setattr(

@@ -9,7 +9,7 @@ from urllib import parse
 import pymssql
 import structlog
 
-from sqlrunner import T100S_TABLE
+from sqlrunner import T1OOS_TABLE
 
 
 log = structlog.get_logger()
@@ -17,7 +17,7 @@ log = structlog.get_logger()
 
 def main(args):
     sql_query = read_text(args["input"])
-    if not are_t100s_handled(sql_query):
+    if not are_t1oos_handled(sql_query):
         raise RuntimeError("T1OOs are not handled correctly")
 
     if args["dsn"] is None and args["dummy_data_file"] is not None:
@@ -32,8 +32,8 @@ def read_text(f_path):
     return f_path.read_text(encoding="utf-8")
 
 
-def are_t100s_handled(sql_query):
-    return sql_query.find(T100S_TABLE) >= 0
+def are_t1oos_handled(sql_query):
+    return sql_query.find(T1OOS_TABLE) >= 0
 
 
 def parse_dsn(dsn):
