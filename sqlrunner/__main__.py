@@ -1,18 +1,13 @@
+import argparse
 import logging
 import os
+import pathlib
 import sys
 
 import structlog
 
-from sqlrunner import main
+from sqlrunner import __version__, main
 
-
-args = main.parse_args(sys.argv[1:], os.environ)
-
-handlers = [logging.StreamHandler(sys.stdout)]
-if args.log_file is not None:
-    handlers.append(logging.FileHandler(args.log_file, "w"))
-logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
 
 # Configure structlog to output structured logs in JSON format. For more information,
 # see:
@@ -40,10 +35,52 @@ structlog.configure(
     logger_factory=structlog.stdlib.LoggerFactory(),
 )
 
-if args.dsn is None and args.dummy_data_file is not None:
-    # Bypass the database
-    results = args.dummy_data_file
-else:
-    sql_query = main.read_text(args.input)
-    results = main.run_sql(dsn=args.dsn, sql_query=sql_query)
-main.write_results(results, args.output)
+
+def parse_args(args, environ):
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dsn",
+        default=environ.get("DATABASE_URL"),
+        help="Data Source Name",
+    )
+    parser.add_argument(
+        "input",
+        type=pathlib.Path,
+        help="Path to the input SQL file",
+    )
+    parser.add_argument(
+        "--output",
+        required=True,
+        type=pathlib.Path,
+        help="Path to the output CSV file",
+    )
+    parser.add_argument(
+        "--dummy-data-file",
+        type=pathlib.Path,
+        help="Path to the input dummy data file to be used as the output CSV file",
+    )
+    parser.add_argument(
+        "--log-file",
+        type=pathlib.Path,
+        help="Path to the log file",
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"sqlrunner {__version__}"
+    )
+    return vars(parser.parse_args(args))
+
+
+def entrypoint():
+    args = parse_args(sys.argv[1:], os.environ)
+
+    handlers = [logging.StreamHandler(sys.stdout)]
+    # This is covered indirectly by a test.
+    if args["log_file"] is not None:  # pragma: no cover
+        handlers.append(logging.FileHandler(args["log_file"], "w"))
+    logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
+
+    main.main(args)
+
+
+if __name__ == "__main__":
+    entrypoint()  # pragma: no cover

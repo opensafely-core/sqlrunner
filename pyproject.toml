@@ -7,7 +7,6 @@ omit = [".venv/*"]
 fail_under = 100
 skip_covered = true
 show_missing = true
-omit = ["sqlrunner/__main__.py"]
 
 [tool.coverage.html]
 show_contexts = true

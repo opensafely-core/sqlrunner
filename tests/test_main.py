@@ -1,49 +1,39 @@
 import gzip
-import pathlib
 
 import pytest
 
-from sqlrunner import T100S_TABLE, main
+from sqlrunner import T1OOS_TABLE, main
 
 
-def test_parse_args():
-    args = main.parse_args(
-        [
-            "--dsn",
-            "dialect+driver://user:password@server:port/database",
-            "--output",
-            "results.csv",
-            "query.sql",
-        ]
+def test_main_with_t1oos_not_handled(tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text("SELECT Patient_ID FROM Patient", "utf-8")
+    with pytest.raises(RuntimeError):
+        main.main({"input": input_})
+
+
+def test_main_with_dummy_data_file(tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text(
+        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
+        "utf-8",
     )
-    assert args.dsn == "dialect+driver://user:password@server:port/database"
-    assert args.input == pathlib.Path("query.sql")
-    assert args.output == pathlib.Path("results.csv")
-    assert args.dummy_data_file is None
-    assert args.log_file is None
-
-
-def test_parse_args_with_defaults_from_environ(monkeypatch):
-    args = main.parse_args(
-        ["--output", "results.csv", "query.sql"],
-        {"DATABASE_URL": "dialect+driver://user:password@server:port/database"},
+    dummy_data_file = tmp_path / "dummy_data.csv"
+    dummy_data_file.write_text("patient_id\n1\n", "utf-8")
+    output = tmp_path / "results.csv"
+    main.main(
+        {
+            "dsn": None,
+            "input": input_,
+            "dummy_data_file": dummy_data_file,
+            "output": output,
+        }
     )
-    assert args.dsn == "dialect+driver://user:password@server:port/database"
-    assert args.input == pathlib.Path("query.sql")
-    assert args.output == pathlib.Path("results.csv")
-    assert args.dummy_data_file is None
-    assert args.log_file is None
-
-
-def test_read_text(tmp_path):
-    f_path = tmp_path / "query.sql"
-    f_path.write_text("SELECT 1 AS patient_id", "utf-8")
-    sql_query = main.read_text(f_path)
-    assert sql_query == "SELECT 1 AS patient_id"
+    assert output.read_text("utf-8") == "patient_id\n1\n"
 
 
 @pytest.mark.parametrize(
-    "sql_query,are_t100s_handled",
+    "sql_query,are_t1oos_handled",
     [
         # not handled by query
         (
@@ -56,7 +46,7 @@ def test_read_text(tmp_path):
         (
             f"""
                 SELECT Patient_ID FROM Patient
-                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T100S_TABLE})
+                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T1OOS_TABLE})
             """,
             True,
         ),
@@ -71,7 +61,7 @@ def test_read_text(tmp_path):
         # handled by comment
         (
             f"""
-                -- {T100S_TABLE} intentionally not excluded
+                -- {T1OOS_TABLE} intentionally not excluded
                 SELECT Patient_ID FROM Patient
             """,
             True,
@@ -80,14 +70,14 @@ def test_read_text(tmp_path):
         # touch" approach
         (
             f"""
-                SELECT Patient_ID FROM {T100S_TABLE}
+                SELECT Patient_ID FROM {T1OOS_TABLE}
              """,
             True,
         ),
     ],
 )
-def test_are_t100s_handled(sql_query, are_t100s_handled):
-    assert main.are_t100s_handled(sql_query) == are_t100s_handled
+def test_are_t1oos_handled(sql_query, are_t1oos_handled):
+    assert main.are_t1oos_handled(sql_query) == are_t1oos_handled
 
 
 @pytest.mark.parametrize(
@@ -102,37 +92,14 @@ def test_parse_dsn(dsn, port):
     assert parsed_dsn["port"] == port
 
 
-@pytest.fixture
-def dsn(mssql_database):
-    dialect = "mssql"
-    driver = "pymssql"
-    user = mssql_database["username"]
-    password = mssql_database["password"]
-    server = mssql_database["host_from_host"]
-    port = mssql_database["port_from_host"]
-    database = mssql_database["db_name"]
-    dsn = f"{dialect}+{driver}://{user}:{password}@{server}:{port}/{database}"
-    return dsn
-
-
-def test_run_sql_t1oos_handled(dsn, log_output):
-    sql_query = f"""
-        -- {T100S_TABLE} intentionally not excluded
-        SELECT 1 AS patient_id
-    """
+def test_run_sql(dsn, log_output):
+    sql_query = "SELECT 1 AS patient_id"
     results = main.run_sql(dsn=dsn, sql_query=sql_query)
-
     assert list(results) == [{"patient_id": 1}]
     assert log_output.entries == [
         {"event": "start_executing_sql_query", "log_level": "info"},
         {"event": "finish_executing_sql_query", "log_level": "info"},
     ]
-
-
-def test_run_sql_t1oos_not_handled(dsn):
-    with pytest.raises(RuntimeError):
-        results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
-        next(results)
 
 
 @pytest.fixture(params=[None, "subdir"])

@@ -1,4 +1,3 @@
-import argparse
 import csv
 import functools
 import gzip
@@ -10,53 +9,31 @@ from urllib import parse
 import pymssql
 import structlog
 
-from sqlrunner import T100S_TABLE, __version__
+from sqlrunner import T1OOS_TABLE
 
 
 log = structlog.get_logger()
 
 
-def parse_args(args, environ=None):
-    environ = environ or {}
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--dsn",
-        default=environ.get("DATABASE_URL"),
-        help="Data Source Name",
-    )
-    parser.add_argument(
-        "input",
-        type=pathlib.Path,
-        help="Path to the input SQL file",
-    )
-    parser.add_argument(
-        "--output",
-        required=True,
-        type=pathlib.Path,
-        help="Path to the output CSV file",
-    )
-    parser.add_argument(
-        "--dummy-data-file",
-        type=pathlib.Path,
-        help="Path to the input dummy data file to be used as the output CSV file",
-    )
-    parser.add_argument(
-        "--log-file",
-        type=pathlib.Path,
-        help="Path to the log file",
-    )
-    parser.add_argument(
-        "--version", action="version", version=f"sqlrunner {__version__}"
-    )
-    return parser.parse_args(args)
+def main(args):
+    sql_query = read_text(args["input"])
+    if not are_t1oos_handled(sql_query):
+        raise RuntimeError("T1OOs are not handled correctly")
+
+    if args["dsn"] is None and args["dummy_data_file"] is not None:
+        # Bypass the database
+        results = args["dummy_data_file"]
+    else:
+        results = run_sql(dsn=args["dsn"], sql_query=sql_query)
+    write_results(results, args["output"])
 
 
 def read_text(f_path):
     return f_path.read_text(encoding="utf-8")
 
 
-def are_t100s_handled(sql_query):
-    return sql_query.find(T100S_TABLE) >= 0
+def are_t1oos_handled(sql_query):
+    return sql_query.find(T1OOS_TABLE) >= 0
 
 
 def parse_dsn(dsn):
@@ -75,10 +52,6 @@ def run_sql(*, dsn, sql_query):
     # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
     # dialect+driver://username:password@host:port/database
     parsed_dsn = parse_dsn(dsn)
-
-    if not are_t100s_handled(sql_query):
-        raise RuntimeError("T1OOs are not handled correctly")
-
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
     log.info("start_executing_sql_query")
