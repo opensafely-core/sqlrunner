@@ -67,7 +67,7 @@ def parse_args(args, environ):
     parser.add_argument(
         "--version", action="version", version=f"sqlrunner {__version__}"
     )
-    return parser.parse_args(args)
+    return vars(parser.parse_args(args))
 
 
 def entrypoint():
@@ -75,17 +75,17 @@ def entrypoint():
 
     handlers = [logging.StreamHandler(sys.stdout)]
     # This is covered indirectly by a test.
-    if args.log_file is not None:  # pragma: no cover
-        handlers.append(logging.FileHandler(args.log_file, "w"))
+    if args["log_file"] is not None:  # pragma: no cover
+        handlers.append(logging.FileHandler(args["log_file"], "w"))
     logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
 
-    if args.dsn is None and args.dummy_data_file is not None:
+    if args["dsn"] is None and args["dummy_data_file"] is not None:
         # Bypass the database
-        results = args.dummy_data_file
+        results = args["dummy_data_file"]
     else:
-        sql_query = main.read_text(args.input)
-        results = main.run_sql(dsn=args.dsn, sql_query=sql_query)
-    main.write_results(results, args.output)
+        sql_query = main.read_text(args["input"])
+        results = main.run_sql(dsn=args["dsn"], sql_query=sql_query)
+    main.write_results(results, args["output"])
 
 
 if __name__ == "__main__":
