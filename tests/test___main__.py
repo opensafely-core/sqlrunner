@@ -25,21 +25,3 @@ def test_entrypoint(monkeypatch, tmp_path, dsn):
     entrypoint()
     assert pathlib.Path("output.csv").read_text("utf-8") == "patient_id\n1\n"
     assert pathlib.Path("log.json").exists()
-
-
-def test_entrypoint_with_dummy_data_file(monkeypatch, tmp_path):
-    monkeypatch.chdir(tmp_path)
-    pathlib.Path("dummy_data.csv").write_text("patient_id\n1\n", "utf-8")
-    monkeypatch.setattr(
-        "sys.argv",
-        [
-            "__main__",
-            "--output",
-            "output.csv",
-            "--dummy-data-file",
-            "dummy_data.csv",
-            "input.sql",
-        ],
-    )
-    entrypoint()
-    assert pathlib.Path("output.csv").read_text("utf-8") == "patient_id\n1\n"

@@ -5,6 +5,14 @@ import pytest
 from sqlrunner import T100S_TABLE, main
 
 
+def test_main_with_dummy_data_file(tmp_path):
+    dummy_data_file = tmp_path / "dummy_data.csv"
+    dummy_data_file.write_text("patient_id\n1\n", "utf-8")
+    output = tmp_path / "results.csv"
+    main.main({"dsn": None, "dummy_data_file": dummy_data_file, "output": output})
+    assert output.read_text("utf-8") == "patient_id\n1\n"
+
+
 def test_read_text(tmp_path):
     f_path = tmp_path / "query.sql"
     f_path.write_text("SELECT 1 AS patient_id", "utf-8")

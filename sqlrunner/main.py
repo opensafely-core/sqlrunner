@@ -15,6 +15,16 @@ from sqlrunner import T100S_TABLE
 log = structlog.get_logger()
 
 
+def main(args):
+    if args["dsn"] is None and args["dummy_data_file"] is not None:
+        # Bypass the database
+        results = args["dummy_data_file"]
+    else:
+        sql_query = read_text(args["input"])
+        results = run_sql(dsn=args["dsn"], sql_query=sql_query)
+    write_results(results, args["output"])
+
+
 def read_text(f_path):
     return f_path.read_text(encoding="utf-8")
 
