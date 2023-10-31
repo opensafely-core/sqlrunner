@@ -16,11 +16,14 @@ log = structlog.get_logger()
 
 
 def main(args):
+    sql_query = read_text(args["input"])
+    if not are_t100s_handled(sql_query):
+        raise RuntimeError("T1OOs are not handled correctly")
+
     if args["dsn"] is None and args["dummy_data_file"] is not None:
         # Bypass the database
         results = args["dummy_data_file"]
     else:
-        sql_query = read_text(args["input"])
         results = run_sql(dsn=args["dsn"], sql_query=sql_query)
     write_results(results, args["output"])
 
@@ -49,10 +52,6 @@ def run_sql(*, dsn, sql_query):
     # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
     # dialect+driver://username:password@host:port/database
     parsed_dsn = parse_dsn(dsn)
-
-    if not are_t100s_handled(sql_query):
-        raise RuntimeError("T1OOs are not handled correctly")
-
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
     log.info("start_executing_sql_query")

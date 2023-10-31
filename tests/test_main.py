@@ -6,11 +6,30 @@ from sqlrunner import T100S_TABLE, main
 
 
 def test_main_with_dummy_data_file(tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text(
+        f"-- {T100S_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
+        "utf-8",
+    )
     dummy_data_file = tmp_path / "dummy_data.csv"
     dummy_data_file.write_text("patient_id\n1\n", "utf-8")
     output = tmp_path / "results.csv"
-    main.main({"dsn": None, "dummy_data_file": dummy_data_file, "output": output})
+    main.main(
+        {
+            "dsn": None,
+            "input": input_,
+            "dummy_data_file": dummy_data_file,
+            "output": output,
+        }
+    )
     assert output.read_text("utf-8") == "patient_id\n1\n"
+
+
+def test_main_with_t1oos_not_handled(tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text("SELECT Patient_ID FROM Patient", "utf-8")
+    with pytest.raises(RuntimeError):
+        main.main({"input": input_})
 
 
 def test_read_text(tmp_path):
@@ -80,24 +99,14 @@ def test_parse_dsn(dsn, port):
     assert parsed_dsn["port"] == port
 
 
-def test_run_sql_t1oos_handled(dsn, log_output):
-    sql_query = f"""
-        -- {T100S_TABLE} intentionally not excluded
-        SELECT 1 AS patient_id
-    """
+def test_run_sql(dsn, log_output):
+    sql_query = "SELECT 1 AS patient_id"
     results = main.run_sql(dsn=dsn, sql_query=sql_query)
-
     assert list(results) == [{"patient_id": 1}]
     assert log_output.entries == [
         {"event": "start_executing_sql_query", "log_level": "info"},
         {"event": "finish_executing_sql_query", "log_level": "info"},
     ]
-
-
-def test_run_sql_t1oos_not_handled(dsn):
-    with pytest.raises(RuntimeError):
-        results = main.run_sql(dsn=dsn, sql_query="SELECT 1 AS patient_id")
-        next(results)
 
 
 @pytest.fixture(params=[None, "subdir"])
