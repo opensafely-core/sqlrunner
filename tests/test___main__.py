@@ -1,5 +1,7 @@
 import pathlib
 
+import pytest
+
 from sqlrunner import T1OOS_TABLE
 from sqlrunner.__main__ import entrypoint
 
@@ -25,3 +27,19 @@ def test_entrypoint(monkeypatch, tmp_path, dsn):
     entrypoint()
     assert pathlib.Path("output.csv").read_text("utf-8") == "patient_id\n1\n"
     assert pathlib.Path("log.json").exists()
+
+
+def test_entrypoint_with_missing_args(monkeypatch):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "__main__",
+            "--output",
+            "output.csv",
+            "--log-file",
+            "log.json",
+            "input.sql",
+        ],
+    )
+    with pytest.raises(RuntimeError):
+        entrypoint()
