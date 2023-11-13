@@ -120,13 +120,18 @@ fix: devenv
 
 
 # build the sqlrunner docker image
-docker-build:
+docker-build image_name="sqlrunner-dev":
     #!/usr/bin/env bash
     set -euo pipefail
 
     [[ -v CI ]] && echo "::group::Build sqlrunner (click to view)" || echo "Build sqlrunner"
-    DOCKER_BUILDKIT=1 docker build . -t sqlrunner
+    DOCKER_BUILDKIT=1 docker build . --tag {{ image_name }}
     [[ -v CI ]] && echo "::endgroup::" || echo ""
+
+
+# build the sqlrunner docker image that can be used locally via the OpenSAFELY CLI
+docker-build-for-os-cli: docker-build
+    docker tag sqlrunner-dev ghcr.io/opensafely-core/sqlrunner:dev
 
 
 # Run the dev project

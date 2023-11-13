@@ -42,7 +42,7 @@ jobs:
       - name: Write VERSION file
         run: echo $VERSION > sqlrunner/VERSION
       - name: Build image
-        run: just docker-build
+        run: just docker-build "sqlrunner"
       - name: Test image
         run: docker run --rm $IMAGE_NAME --help
       - name: Log into GitHub Container Registry
