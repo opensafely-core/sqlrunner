@@ -72,6 +72,8 @@ def parse_args(args, environ):
 
 def entrypoint():
     args = parse_args(sys.argv[1:], os.environ)
+    if args["dsn"] is None and args["dummy_data_file"] is None:
+        raise RuntimeError("Neither --dsn nor --dummy-data-file were supplied")
 
     handlers = [logging.StreamHandler(sys.stdout)]
     # This is covered indirectly by a test.
