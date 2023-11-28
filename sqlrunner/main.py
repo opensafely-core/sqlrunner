@@ -26,7 +26,11 @@ def main(args):
         # Bypass the database
         results = args["dummy_data_file"]
     else:
-        results = run_sql(dsn=args["dsn"], sql_query=sql_query)
+        results = run_sql(
+            dsn=args["dsn"],
+            sql_query=sql_query,
+            include_statistics=args["include_statistics"],
+        )
     write_results(results, args["output"])
 
 

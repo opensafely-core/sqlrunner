@@ -67,6 +67,10 @@ def parse_args(args, environ):
     parser.add_argument(
         "--version", action="version", version=f"sqlrunner {__version__}"
     )
+    parser.add_argument(
+        "--include-statistics",
+        action="store_true",
+    )
     return vars(parser.parse_args(args))
 
 
