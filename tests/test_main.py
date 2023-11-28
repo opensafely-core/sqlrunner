@@ -102,6 +102,29 @@ def test_run_sql(dsn, log_output):
     ]
 
 
+def test_run_sql_with_stats(dsn, log_output):
+    sql_query = "CREATE TABLE #test(patient_id int); INSERT #test VALUES (1); SELECT patient_id from #test;"
+    results = main.run_sql(dsn=dsn, sql_query=sql_query, include_statistics=True)
+    assert list(results) == [{"patient_id": 1}]
+    assert log_output.entries[::4] == [
+        {"event": "start_executing_sql_query", "log_level": "info"},
+        {"event": "finish_executing_sql_query", "log_level": "info"},
+    ]
+    assert log_output.entries[2]["event"].startswith(
+        "scans logical physical read_ahead lob_logical lob_physical lob_read_ahead table"
+    )
+    assert (
+        not (
+            "exec_cpu_ms",
+            "exec_elapsed_ms",
+            "exec_cpu_ratio",
+            "parse_cpu_ms",
+            "parse_elapsed_ms",
+        )
+        - log_output.entries[3].keys()
+    )
+
+
 @pytest.fixture(params=[None, "subdir"])
 def output_path(tmp_path, request):
     """Returns a temporary output path object.
