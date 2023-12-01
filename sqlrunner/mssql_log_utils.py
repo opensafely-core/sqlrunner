@@ -3,36 +3,29 @@ import time
 from collections import defaultdict
 
 
-def execute_with_log(cursor, query, log):
+def execute_with_log(cursor, sql_query, log):
     """
-    Execute `query` with `connection` while logging SQL, timing and IO information
-
-
+    Execute `query` with `connection` while logging SQL, timing and IO information.
     """
     connection = cursor.connection
-    log.info(f"SQL:\n{query}")
+    log.info("sql_query", sql_query=sql_query)
 
     # https://pymssql.readthedocs.io/en/stable/ref/_mssql.html#_mssql.MSSQLConnection.set_msghandler
     messages = []
     connection._conn.set_msghandler(lambda *args: messages.append(args[-1]))
     cursor.execute("SET STATISTICS TIME ON")
     cursor.execute("SET STATISTICS IO ON")
+
     start = time.monotonic()
-
-    # Actually run the query
-    cursor.execute(query)
-
+    cursor.execute(sql_query)
     duration = time.monotonic() - start
+
     timings, table_io = parse_statistics_messages(messages)
 
     if table_io:
-        log.info(format_table_io(table_io))
+        log.info("table_io_stats", table_io=table_io)
 
-    # In order to make the logs visually parseable rather than just a wall of text we
-    # want some visual space between logs for each query. The simplest way to achieve
-    # this is to append some newlines to the last thing we log here.
-    append_str_to_last_value(timings, "\n\n")
-    log.info(f"{int(duration)} seconds:", **timings)
+    log.info("timing_stats", duration_ms=int(duration), **timings)
 
 
 SQLSERVER_STATISTICS_REGEX = re.compile(
@@ -68,7 +61,7 @@ SQLSERVER_STATISTICS_REGEX = re.compile(
 def parse_statistics_messages(messages):
     """
     Accepts a list of MSSQL statistics messages and returns a dict of cumulative timing
-    stats and a dict of cumulative table IO stats
+    stats and a dict of cumulative table IO stats.
     """
     timings = {
         "exec_cpu_ms": 0,
@@ -116,35 +109,3 @@ def parse_statistics_messages(messages):
             timings["exec_cpu_ms"] / timings["exec_elapsed_ms"], 2
         )
     return timings, table_io
-
-
-def format_table_io(table_io):
-    results_table = table_io_dict_to_table(table_io)
-    return format_table(results_table)
-
-
-def table_io_dict_to_table(table_io):
-    headers = list(table_io.values())[0].keys()
-    table = [[*headers, "table"]]
-    for table_name, stats in table_io.items():
-        table.append(
-            [*(str(stats[header]) for header in headers), table_name],
-        )
-    return table
-
-
-def format_table(table):
-    column_max_length = {i: 0 for i in range(0, len(table[0]))}
-    for row in table:
-        # Ignore the right-most column as we don't want to pad that
-        for i, value in enumerate(row[:-1]):
-            column_max_length[i] = max(column_max_length[i], len(value))
-    return "\n".join(
-        " ".join(value.ljust(column_max_length[i]) for i, value in enumerate(row))
-        for row in table
-    )
-
-
-def append_str_to_last_value(dictionary, suffix):
-    last_key, last_value = list(dictionary.items())[-1]
-    dictionary[last_key] = f"{last_value}{suffix}"

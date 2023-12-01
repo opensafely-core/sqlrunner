@@ -120,8 +120,19 @@ def test_run_sql_with_stats(dsn, log_output, sql_query):
     statistics = entries[2 : len(entries) - 1]
     if len(statistics) > 1:
         iostats = statistics.pop(0)
-        assert iostats["event"].startswith(
-            "scans logical physical read_ahead lob_logical lob_physical lob_read_ahead table"
+        table_io = iostats["table_io"]
+        assert list(table_io.keys()) == ["#test"]
+        assert (
+            not (
+                "scans",
+                "logical",
+                "physical",
+                "read_ahead",
+                "lob_logical",
+                "lob_physical",
+                "lob_read_ahead",
+            )
+            - table_io["#test"].keys()
         )
     assert (
         not (
