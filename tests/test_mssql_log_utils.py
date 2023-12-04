@@ -131,8 +131,6 @@ from sqlrunner.mssql_log_utils import (
     ],
 )
 def test_parse_statistics_messages(messages, results):
-    # messages =
-
     timings, table_io = parse_statistics_messages(messages)
 
     assert timings == results["timings"]
