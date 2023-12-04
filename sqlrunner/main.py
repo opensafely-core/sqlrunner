@@ -11,6 +11,8 @@ import structlog
 
 from sqlrunner import T1OOS_TABLE
 
+from .mssql_log_utils import execute_with_log
+
 
 log = structlog.get_logger()
 
@@ -24,7 +26,11 @@ def main(args):
         # Bypass the database
         results = args["dummy_data_file"]
     else:
-        results = run_sql(dsn=args["dsn"], sql_query=sql_query)
+        results = run_sql(
+            dsn=args["dsn"],
+            sql_query=sql_query,
+            include_statistics=args["include_statistics"],
+        )
     write_results(results, args["output"])
 
 
@@ -47,7 +53,7 @@ def parse_dsn(dsn):
     }
 
 
-def run_sql(*, dsn, sql_query):
+def run_sql(*, dsn, sql_query, include_statistics=False):
     # `dsn` is expected to follow RFC-1738, just as SQL Alchemy expects:
     # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
     # dialect+driver://username:password@host:port/database
@@ -55,7 +61,10 @@ def run_sql(*, dsn, sql_query):
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
     log.info("start_executing_sql_query")
-    cursor.execute(sql_query)
+    if include_statistics:
+        execute_with_log(cursor, sql_query, log)
+    else:
+        cursor.execute(sql_query)
     log.info("finish_executing_sql_query")
     yield from cursor
     conn.close()
