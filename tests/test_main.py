@@ -109,41 +109,36 @@ def test_run_sql(dsn, log_output):
         "SELECT 1 as patient_id",
     ],
 )
-def test_run_sql_with_stats(dsn, log_output, sql_query):
+def test_run_sql_include_statistics(dsn, log_output, sql_query):
     results = main.run_sql(dsn=dsn, sql_query=sql_query, include_statistics=True)
     assert list(results) == [{"patient_id": 1}]
-    entries = log_output.entries
-    assert entries[:: len(entries) - 1] == [
-        {"event": "start_executing_sql_query", "log_level": "info"},
-        {"event": "finish_executing_sql_query", "log_level": "info"},
-    ]
-    statistics = entries[2 : len(entries) - 1]
-    if len(statistics) > 1:
-        iostats = statistics.pop(0)
-        table_io = iostats["table_io"]
-        assert list(table_io.keys()) == ["#test"]
-        assert (
-            not (
-                "scans",
-                "logical",
-                "physical",
-                "read_ahead",
-                "lob_logical",
-                "lob_physical",
-                "lob_read_ahead",
-            )
-            - table_io["#test"].keys()
-        )
-    assert (
-        not (
-            "exec_cpu_ms",
-            "exec_elapsed_ms",
-            "exec_cpu_ratio",
-            "parse_cpu_ms",
-            "parse_elapsed_ms",
-        )
-        - statistics[0].keys()
-    )
+
+    by_event = {e["event"]: e for e in log_output.entries}
+    assert by_event["start_executing_sql_query"]["log_level"] == "info"
+    assert by_event["sql_query"]["log_level"] == "info"
+    assert by_event["sql_query"]["sql_query"] == sql_query
+    assert by_event["finish_executing_sql_query"]["log_level"] == "info"
+
+    for k in [
+        "duration_ms",
+        "exec_cpu_ms",
+        "exec_cpu_ratio",
+        "exec_elapsed_ms",
+        "parse_cpu_ms",
+        "parse_elapsed_ms",
+    ]:
+        assert k in by_event["timing_stats"]
+
+    for k in [
+        "lob_logical",
+        "lob_physical",
+        "lob_read_ahead",
+        "logical",
+        "physical",
+        "read_ahead",
+        "scans",
+    ]:
+        assert k in by_event["table_io_stats"]["table_io"]["#test"]
 
 
 @pytest.fixture(params=[None, "subdir"])

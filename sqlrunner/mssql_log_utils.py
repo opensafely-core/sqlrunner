@@ -21,11 +21,8 @@ def execute_with_log(cursor, sql_query, log):
     duration = time.monotonic() - start
 
     timings, table_io = parse_statistics_messages(messages)
-
-    if table_io:
-        log.info("table_io_stats", table_io=table_io)
-
     log.info("timing_stats", duration_ms=int(duration), **timings)
+    log.info("table_io_stats", table_io=table_io)
 
 
 SQLSERVER_STATISTICS_REGEX = re.compile(
