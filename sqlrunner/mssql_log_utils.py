@@ -3,6 +3,54 @@ import time
 from collections import defaultdict
 
 
+# from contextlib import contextmanager
+
+
+class logging_cursor:
+    def __init__(self, connection, sql_query, log):
+        self._cursor = connection.cursor()
+        self._log = log
+        self._query = sql_query
+
+    def __enter__(self):
+        if self._log:
+            self._messages = []
+            self._cursor.connection._conn.set_msghandler(
+                lambda *args: self._messages.append(args[-1])
+            )
+            self._cursor.execute("SET STATISTICS TIME ON")
+            self._cursor.execute("SET STATISTICS IO ON")
+            self._log.info("sql_query", sql_query=self._query)
+            self._start = time.monotonic()
+        return self._cursor
+
+    def __exit__(self, type, value, traceback):  # noqa
+        if self._log:
+            duration = time.monotonic() - self._start
+            timings, table_io = parse_statistics_messages(self._messages)
+            self._log.info("timing_stats", duration_ms=int(duration), **timings)
+            self._log.info("table_io_stats", table_io=table_io)
+
+
+# @contextmanager
+# def logging_cursor(connection, sql_query, log):
+#     cursor = connection.cursor()
+#     if log:
+#         log.info("sql_query", sql_query=sql_query)
+#         messages = []
+#         connection._conn.set_msghandler(lambda *args: messages.append(args[-1]))
+#         cursor.execute("SET STATISTICS TIME ON")
+#         cursor.execute("SET STATISTICS IO ON")
+#         start = time.monotonic()
+#         yield cursor
+#         duration = time.monotonic() - start
+#         timings, table_io = parse_statistics_messages(messages)
+#         log.info("timing_stats", duration_ms=int(duration), **timings)
+#         log.info("table_io_stats", table_io=table_io)
+#     else:
+#         yield cursor
+
+
 def execute_with_log(cursor, sql_query, log):
     """
     Execute `query` with `connection` while logging SQL, timing and IO information.

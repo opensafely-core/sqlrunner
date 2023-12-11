@@ -11,7 +11,7 @@ import structlog
 
 from sqlrunner import T1OOS_TABLE
 
-from .mssql_log_utils import execute_with_log
+from .mssql_log_utils import logging_cursor
 
 
 log = structlog.get_logger()
@@ -59,14 +59,13 @@ def run_sql(*, dsn, sql_query, include_statistics=False):
     # dialect+driver://username:password@host:port/database
     parsed_dsn = parse_dsn(dsn)
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
-    cursor = conn.cursor()
+    #    cursor = conn.cursor()
+
     log.info("start_executing_sql_query")
-    if include_statistics:
-        execute_with_log(cursor, sql_query, log)
-    else:
+    with logging_cursor(conn, sql_query, log if include_statistics else None) as cursor:
         cursor.execute(sql_query)
-    log.info("finish_executing_sql_query")
-    yield from cursor
+        log.info("finish_executing_sql_query")
+        yield from cursor
     conn.close()
 
 

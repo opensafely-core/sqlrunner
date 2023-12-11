@@ -141,6 +141,31 @@ def test_run_sql_include_statistics(dsn, log_output, sql_query):
         assert k in by_event["table_io_stats"]["table_io"]["#test"]
 
 
+def test_run_sql_include_statistics_exec_times(dsn, log_output):
+    # include some statements to guarantee a bit of wait and also
+    # some CPU time by doing some arbitrary maths on some random numbers
+    sql_query = """
+    WITH CTE as (
+        SELECT 1 AS row_id,
+        ABS(Cast(Cast(CRYPT_GEN_RANDOM(4) as INT) as Float)) / Cast(0x7FFFFFFF as int) RandNumber
+        UNION ALL
+        SELECT row_id+1,
+        ABS(Cast(Cast(CRYPT_GEN_RANDOM(4+row_id) as INT) as Float)) / Cast(0x7FFFFFFF as int) RandNumber
+        FROM CTE
+        WHERE row_id <10000
+    )
+    SELECT *
+    FROM CTE OPTION(MAXRECURSION 0)
+    """
+    results = main.run_sql(dsn=dsn, sql_query=sql_query, include_statistics=True)
+    # consume the generator
+    results = list(results)
+    assert len(results) == 10000
+    by_event = {e["event"]: e for e in log_output.entries}
+    assert by_event["timing_stats"]["exec_cpu_ms"] > 10
+    assert by_event["timing_stats"]["exec_elapsed_ms"] > 10
+
+
 @pytest.fixture(params=[None, "subdir"])
 def output_path(tmp_path, request):
     """Returns a temporary output path object.
