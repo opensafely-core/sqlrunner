@@ -9,7 +9,7 @@ from urllib import parse
 import pymssql
 import structlog
 
-from sqlrunner import T1OOS_TABLE
+from sqlrunner import T1OOS_TABLE, utils
 
 from .mssql_log_utils import execute_with_log
 
@@ -70,18 +70,13 @@ def run_sql(*, dsn, sql_query, include_statistics=False):
     conn.close()
 
 
-def touch(f_path):
-    f_path.parent.mkdir(parents=True, exist_ok=True)
-    f_path.touch()
-
-
 @functools.singledispatch
 def write_results(results, f_path):
     # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
     # Runner action will fail. A user won't know whether their query returns any
     # results, so to avoid the SQL Runner action failing, we write an empty output CSV
     # file.
-    touch(f_path)
+    utils.touch(f_path)
 
     try:
         first_result = next(results)
@@ -110,5 +105,5 @@ def _(results: pathlib.Path, f_path):
     if f_path.exists() and f_path.samefile(results):
         return
 
-    touch(f_path)
+    utils.touch(f_path)
     shutil.copy(results, f_path)

@@ -6,7 +6,7 @@ import sys
 
 import structlog
 
-from sqlrunner import __version__, main
+from sqlrunner import __version__, main, utils
 
 
 # Configure structlog to output structured logs in JSON format. For more information,
@@ -82,7 +82,9 @@ def entrypoint():
     handlers = [logging.StreamHandler(sys.stdout)]
     # This is covered indirectly by a test.
     if args["log_file"] is not None:  # pragma: no cover
-        handlers.append(logging.FileHandler(args["log_file"], "w"))
+        log_file = args["log_file"]
+        utils.touch(log_file)
+        handlers.append(logging.FileHandler(log_file, "w"))
     logging.basicConfig(format="%(message)s", level=logging.INFO, handlers=handlers)
 
     main.main(args)
