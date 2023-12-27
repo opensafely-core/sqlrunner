@@ -15,7 +15,7 @@ def test_main_with_t1oos_not_handled(tmp_path):
 def test_main_with_dummy_data_file(tmp_path):
     input_ = tmp_path / "query.sql"
     input_.write_text(
-        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
+        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT patient_id FROM Patient",
         "utf-8",
     )
     dummy_data_file = tmp_path / "dummy_data.csv"
@@ -30,6 +30,24 @@ def test_main_with_dummy_data_file(tmp_path):
         }
     )
     assert output.read_text("utf-8") == "patient_id\n1\n"
+
+
+def test_main_without_dummy_data_file(tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text(
+        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT patient_id FROM Patient",
+        "utf-8",
+    )
+    output = tmp_path / "results.csv"
+    main.main(
+        {
+            "dsn": None,
+            "input": input_,
+            "dummy_data_file": None,
+            "output": output,
+        }
+    )
+    assert output.read_text("utf-8") == 'patient_id\n""\n'
 
 
 @pytest.mark.parametrize(
@@ -190,3 +208,65 @@ def test_write_results_from_dummy_data_file(dummy_data_fname, results_fname, tmp
     results_file = tmp_path / results_fname
     main.write_results(dummy_data_file, results_file)
     assert results_file.read_text(encoding="utf-8") == "id\n1\n2\n"
+
+
+@pytest.mark.parametrize(
+    "sql_query",
+    [
+        # A complex query with a common table expression and a correlated
+        # subquery and column aliases to ensure that the parser
+        # correctly identifies the output columns
+        """
+        ;with CTE as (
+        SELECT
+            column1,
+            [column 2],
+            count(*) as column_3
+        FROM
+            table
+        GROUP BY
+            column1,
+            [column 2],
+        )
+        SELECT c.*,x.column_4
+        FROM CTE c
+        JOIN (
+            SELECT
+                column1,
+                column_4
+            FROM table2
+        ) x
+            ON c.column1 = x.column1
+        """,
+        # A multi-statement batch to ensure we create headers for the last
+        # statement in the batch
+        """
+        SELECT foo, bar, baz, qux
+        INTO #temptable;
+        SELECT
+            foo as [column1],
+            bar as [column 2],
+            baz as [column_3],
+            qux as [column_4]
+        FROM #temptable
+        """,
+    ],
+)
+def test_generate_column_headers(sql_query):
+    assert main.get_column_headers(sql_query) == [
+        "column1",
+        "column 2",
+        "column_3",
+        "column_4",
+    ]
+
+
+def test_generate_column_headers_fails_on_select_star():
+    # Ensure that a helpful error message is generated
+    # if a user tries to generate columns from a query
+    # that has `*` in the select list
+    with pytest.raises(
+        RuntimeError,
+        match=r"Headers can only be generated for queries with explicit column names",
+    ):
+        main.get_column_headers("SELECT * FROM table")

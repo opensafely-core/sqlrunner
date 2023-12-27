@@ -8,6 +8,8 @@ from urllib import parse
 
 import pymssql
 import structlog
+from sqlglot.dialects import TSQL
+from sqlglot.optimizer.qualify_columns import qualify_columns
 
 from sqlrunner import T1OOS_TABLE, utils
 
@@ -22,9 +24,14 @@ def main(args):
     if not are_t1oos_handled(sql_query):
         raise RuntimeError("T1OOs are not handled correctly")
 
-    if args["dsn"] is None and args["dummy_data_file"] is not None:
-        # Bypass the database
-        results = args["dummy_data_file"]
+    if args["dsn"] is None:
+        if args["dummy_data_file"] is None:
+            # Output dummy data file with header but no rows
+            results = iter([{x: None for x in get_column_headers(sql_query)}])
+
+        else:
+            # Bypass the database
+            results = args["dummy_data_file"]
     else:
         results = run_sql(
             dsn=args["dsn"],
@@ -32,6 +39,26 @@ def main(args):
             include_statistics=args["include_statistics"],
         )
     write_results(results, args["output"])
+
+
+def get_column_headers(sql_query):
+    tsql_parser = TSQL()
+
+    # filter out any empty expressions returned by parser
+    parsed = [q for q in tsql_parser.parse(sql_query) if q is not None]
+
+    # expand out "*" to full column names if referencing another object
+    # in query with explicit column names
+    columns = qualify_columns(parsed[-1], schema=None, infer_schema=True).named_selects
+
+    # if "*" not referencing an object with explicit column names
+    # we don't know what the headers should be
+    if "*" in columns:
+        raise RuntimeError(
+            "Headers can only be generated for queries with explicit column names"
+        )
+
+    return columns
 
 
 def read_text(f_path):
