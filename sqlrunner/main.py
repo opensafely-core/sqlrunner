@@ -1,9 +1,6 @@
 import csv
-import functools
 import gzip
 import itertools
-import pathlib
-import shutil
 from urllib import parse
 
 import pymssql
@@ -31,7 +28,7 @@ def main(args):
 
         else:
             # Bypass the database
-            results = args["dummy_data_file"]
+            results = read_dummy_data_file(args["dummy_data_file"])
     else:
         results = run_sql(
             dsn=args["dsn"],
@@ -97,7 +94,6 @@ def run_sql(*, dsn, sql_query, include_statistics=False):
     conn.close()
 
 
-@functools.singledispatch
 def write_results(results, f_path):
     # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
     # Runner action will fail. A user won't know whether their query returns any
@@ -127,10 +123,7 @@ def write_results(results, f_path):
         f.close()
 
 
-@write_results.register
-def _(results: pathlib.Path, f_path):
-    if f_path.exists() and f_path.samefile(results):
-        return
-
-    utils.touch(f_path)
-    shutil.copy(results, f_path)
+def read_dummy_data_file(f_path):
+    with f_path.open("r") as f:
+        reader = csv.DictReader(f)
+        yield from reader

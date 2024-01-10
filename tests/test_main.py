@@ -194,20 +194,11 @@ def test_write_results_compressed(output_path):
     assert gzip.open(f_path, "rt").read() == "id\n1\n2\n"
 
 
-@pytest.mark.parametrize(
-    "dummy_data_fname,results_fname",
-    [
-        ("results.csv", "results.csv"),
-        ("dummy_data_file.csv", "results.csv"),
-        ("results.csv", "subdir/results.csv"),
-    ],
-)
-def test_write_results_from_dummy_data_file(dummy_data_fname, results_fname, tmp_path):
-    dummy_data_file = tmp_path / dummy_data_fname
+def test_read_dummy_data_file(tmp_path):
+    dummy_data_file = tmp_path / "dummy_data_file.csv"
     dummy_data_file.write_text("id\n1\n2\n", encoding="utf-8")
-    results_file = tmp_path / results_fname
-    main.write_results(dummy_data_file, results_file)
-    assert results_file.read_text(encoding="utf-8") == "id\n1\n2\n"
+    dummy_rows = list(main.read_dummy_data_file(dummy_data_file))
+    assert dummy_rows == [{"id": "1"}, {"id": "2"}]
 
 
 @pytest.mark.parametrize(
