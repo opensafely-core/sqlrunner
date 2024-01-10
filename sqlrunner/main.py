@@ -1,6 +1,8 @@
 import csv
 import gzip
 import itertools
+import pathlib
+import sys
 from urllib import parse
 
 import pymssql
@@ -35,7 +37,8 @@ def main(args):
             sql_query=sql_query,
             include_statistics=args["include_statistics"],
         )
-    write_results(results, args["output"])
+    output = args["output"] or sys.stdout
+    write_results(results, output)
 
 
 def get_column_headers(sql_query):
@@ -94,12 +97,23 @@ def run_sql(*, dsn, sql_query, include_statistics=False):
     conn.close()
 
 
-def write_results(results, f_path):
-    # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
-    # Runner action will fail. A user won't know whether their query returns any
-    # results, so to avoid the SQL Runner action failing, we write an empty output CSV
-    # file.
-    utils.touch(f_path)
+def write_results(results, destination):
+    dest_is_path = isinstance(destination, pathlib.Path)
+
+    if dest_is_path:
+        # If writing to file, job-runner expects the output CSV file to exist.
+        # If it doesn't, then the SQL Runner action will fail.
+        # A user won't know whether their query returns any results,
+        # so to avoid the SQL Runner action failing,
+        # we write an empty output CSV file.
+        utils.touch(destination)
+
+        if destination.suffixes == [".csv", ".gz"]:
+            destination = gzip.open(
+                destination, "wt", newline="", encoding="utf-8", compresslevel=6
+            )
+        else:
+            destination = destination.open(mode="w", newline="", encoding="utf-8")
 
     try:
         first_result = next(results)
@@ -108,19 +122,15 @@ def write_results(results, f_path):
 
     fieldnames = first_result.keys()
 
-    if f_path.suffixes == [".csv", ".gz"]:
-        f = gzip.open(f_path, "wt", newline="", encoding="utf-8", compresslevel=6)
-    else:
-        f = f_path.open(mode="w", newline="", encoding="utf-8")
-
     try:
-        writer = csv.DictWriter(f, fieldnames)
+        writer = csv.DictWriter(destination, fieldnames)
         log.info("start_writing_results")
         writer.writeheader()
         writer.writerows(itertools.chain([first_result], results))
         log.info("finish_writing_results")
     finally:
-        f.close()
+        if dest_is_path:
+            destination.close()
 
 
 def read_dummy_data_file(f_path):
