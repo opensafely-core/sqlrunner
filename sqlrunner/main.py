@@ -134,6 +134,6 @@ def write_results(results, destination):
 
 
 def read_dummy_data_file(f_path):
-    with f_path.open("r") as f:
+    with f_path.open("r", newline="") as f:
         reader = csv.DictReader(f)
         yield from reader
