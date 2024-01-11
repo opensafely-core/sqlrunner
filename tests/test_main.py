@@ -50,6 +50,27 @@ def test_main_without_dummy_data_file(tmp_path):
     assert output.read_text("utf-8") == 'patient_id\n""\n'
 
 
+def test_main_with_dummy_data_file_to_stdout(capsys, tmp_path):
+    input_ = tmp_path / "query.sql"
+    input_.write_text(
+        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
+        "utf-8",
+    )
+    csv_lines = "patient_id\n1\n"
+    dummy_data_file = tmp_path / "dummy_data.csv"
+    dummy_data_file.write_text(csv_lines, "utf-8")
+    main.main(
+        {
+            "dsn": None,
+            "input": input_,
+            "dummy_data_file": dummy_data_file,
+            "output": None,
+        }
+    )
+    stdout = capsys.readouterr().out
+    assert stdout.replace("\r", "") == csv_lines
+
+
 @pytest.mark.parametrize(
     "sql_query,are_t1oos_handled",
     [
@@ -194,20 +215,11 @@ def test_write_results_compressed(output_path):
     assert gzip.open(f_path, "rt").read() == "id\n1\n2\n"
 
 
-@pytest.mark.parametrize(
-    "dummy_data_fname,results_fname",
-    [
-        ("results.csv", "results.csv"),
-        ("dummy_data_file.csv", "results.csv"),
-        ("results.csv", "subdir/results.csv"),
-    ],
-)
-def test_write_results_from_dummy_data_file(dummy_data_fname, results_fname, tmp_path):
-    dummy_data_file = tmp_path / dummy_data_fname
+def test_read_dummy_data_file(tmp_path):
+    dummy_data_file = tmp_path / "dummy_data_file.csv"
     dummy_data_file.write_text("id\n1\n2\n", encoding="utf-8")
-    results_file = tmp_path / results_fname
-    main.write_results(dummy_data_file, results_file)
-    assert results_file.read_text(encoding="utf-8") == "id\n1\n2\n"
+    dummy_rows = list(main.read_dummy_data_file(dummy_data_file))
+    assert dummy_rows == [{"id": "1"}, {"id": "2"}]
 
 
 @pytest.mark.parametrize(
