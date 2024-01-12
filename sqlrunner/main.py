@@ -24,12 +24,10 @@ def main(args):
         raise RuntimeError("T1OOs are not handled correctly")
 
     if args["dsn"] is None:
+        # Bypass the database
         if args["dummy_data_file"] is None:
-            # Output dummy data file with header but no rows
             results = iter([{x: None for x in get_column_headers(sql_query)}])
-
         else:
-            # Bypass the database
             results = read_dummy_data_file(args["dummy_data_file"])
     else:
         results = run_sql(
@@ -37,6 +35,7 @@ def main(args):
             sql_query=sql_query,
             include_statistics=args["include_statistics"],
         )
+
     output = args["output"] or sys.stdout
     write_results(results, output)
 
