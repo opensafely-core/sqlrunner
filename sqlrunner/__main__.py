@@ -80,8 +80,7 @@ def entrypoint():
         raise RuntimeError("Neither --dsn nor --dummy-data-file were supplied")
 
     handlers = [logging.StreamHandler(sys.stdout)]
-    # This is covered indirectly by a test.
-    if args["log_file"] is not None:  # pragma: no cover
+    if args["log_file"] is not None:
         log_file = args["log_file"]
         utils.touch(log_file)
         handlers.append(logging.FileHandler(log_file, "w"))
