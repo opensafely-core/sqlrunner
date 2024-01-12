@@ -75,5 +75,5 @@ def test_entrypoint_without_dsn_without_dummy_data_file(
 ):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr("sys.argv", ["__main__", "--output", "output.csv", input_file])
-    with pytest.raises(RuntimeError):
-        entrypoint()
+    entrypoint()
+    assert pathlib.Path("output.csv").read_text("utf-8") == 'Patient_ID\n""\n'
