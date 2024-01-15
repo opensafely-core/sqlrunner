@@ -1,7 +1,7 @@
+import contextlib
 import csv
 import gzip
 import itertools
-import pathlib
 import sys
 from urllib import parse
 
@@ -24,12 +24,10 @@ def main(args):
         raise RuntimeError("T1OOs are not handled correctly")
 
     if args["dsn"] is None:
+        # Bypass the database
         if args["dummy_data_file"] is None:
-            # Output dummy data file with header but no rows
             results = iter([{x: None for x in get_column_headers(sql_query)}])
-
         else:
-            # Bypass the database
             results = read_dummy_data_file(args["dummy_data_file"])
     else:
         results = run_sql(
@@ -37,8 +35,8 @@ def main(args):
             sql_query=sql_query,
             include_statistics=args["include_statistics"],
         )
-    output = args["output"] or sys.stdout
-    write_results(results, output)
+
+    write_results(results, args["output"])
 
 
 def get_column_headers(sql_query):
@@ -97,23 +95,13 @@ def run_sql(*, dsn, sql_query, include_statistics=False):
     conn.close()
 
 
-def write_results(results, destination):
-    dest_is_path = isinstance(destination, pathlib.Path)
-
-    if dest_is_path:
-        # If writing to file, job-runner expects the output CSV file to exist.
-        # If it doesn't, then the SQL Runner action will fail.
-        # A user won't know whether their query returns any results,
-        # so to avoid the SQL Runner action failing,
-        # we write an empty output CSV file.
-        utils.touch(destination)
-
-        if destination.suffixes == [".csv", ".gz"]:
-            destination = gzip.open(
-                destination, "wt", newline="", encoding="utf-8", compresslevel=6
-            )
-        else:
-            destination = destination.open(mode="w", newline="", encoding="utf-8")
+def write_results(results, f_path):
+    if f_path is not None:
+        # job-runner expects the output CSV file to exist. If it doesn't, then the SQL
+        # Runner action will fail. A user won't know whether their query returns any
+        # results, so to avoid the SQL Runner action failing, we write an empty output
+        # CSV file.
+        utils.touch(f_path)
 
     try:
         first_result = next(results)
@@ -122,15 +110,21 @@ def write_results(results, destination):
 
     fieldnames = first_result.keys()
 
-    try:
-        writer = csv.DictWriter(destination, fieldnames)
+    if f_path is not None:
+        kwargs = {"newline": "", "encoding": "utf-8"}
+        if f_path.suffixes == [".csv", ".gz"]:
+            context = gzip.open(f_path, "wt", compresslevel=6, **kwargs)
+        else:
+            context = open(f_path, "w", **kwargs)
+    else:
+        context = contextlib.nullcontext(sys.stdout)
+
+    with context as f:
+        writer = csv.DictWriter(f, fieldnames)
         log.info("start_writing_results")
         writer.writeheader()
         writer.writerows(itertools.chain([first_result], results))
         log.info("finish_writing_results")
-    finally:
-        if dest_is_path:
-            destination.close()
 
 
 def read_dummy_data_file(f_path):

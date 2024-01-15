@@ -77,3 +77,13 @@ def test_entrypoint_without_dsn_without_dummy_data_file(
     monkeypatch.setattr("sys.argv", ["__main__", "--output", "output.csv", input_file])
     entrypoint()
     assert pathlib.Path("output.csv").read_text("utf-8") == 'Patient_ID\n""\n'
+
+
+def test_entrypoint_without_output(monkeypatch, tmp_path, input_file, capsys):
+    # Without dsn, dummy-data-file, and (as the name of the test states) output. We
+    # expect column headers to be written to stdout
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("sys.argv", ["__main__", input_file])
+    entrypoint()
+    out, _ = capsys.readouterr()
+    assert out == 'Patient_ID\r\n""\r\n'

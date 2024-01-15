@@ -12,27 +12,6 @@ def test_main_with_t1oos_not_handled(tmp_path):
         main.main({"input": input_})
 
 
-def test_main_with_dummy_data_file_to_stdout(capsys, tmp_path):
-    input_ = tmp_path / "query.sql"
-    input_.write_text(
-        f"-- {T1OOS_TABLE} intentionally not excluded\nSELECT Patient_ID FROM Patient",
-        "utf-8",
-    )
-    csv_lines = "patient_id\n1\n"
-    dummy_data_file = tmp_path / "dummy_data.csv"
-    dummy_data_file.write_text(csv_lines, "utf-8")
-    main.main(
-        {
-            "dsn": None,
-            "input": input_,
-            "dummy_data_file": dummy_data_file,
-            "output": None,
-        }
-    )
-    stdout = capsys.readouterr().out
-    assert stdout.replace("\r", "") == csv_lines
-
-
 @pytest.mark.parametrize(
     "sql_query,are_t1oos_handled",
     [

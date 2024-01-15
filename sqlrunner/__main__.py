@@ -50,7 +50,6 @@ def parse_args(args, environ):
     )
     parser.add_argument(
         "--output",
-        required=True,
         type=pathlib.Path,
         help="Path to the output CSV file",
     )
