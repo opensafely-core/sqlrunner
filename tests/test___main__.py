@@ -1,3 +1,15 @@
+"""
+SQL Runner has three command-line arguments that determine its behaviour: `dsn`,
+`dummy-data-file`, and `output`. Each can take a string or None. If we set `output` to a
+string (a path), then SQL Runner's behaviour is as follows:
+
+| dsn  | dummy-data-file | Behaviour                         | Test                                                  |
+|------|-----------------|-----------------------------------|-------------------------------------------------------|
+| dsn  | path            | Query DB, write results to output | `test_entrypoint_with_dsn`                            |
+| dsn  | None            | Query DB, write results to output | `test_entrypoint_with_dsn`                            |
+| None | path            | Write dummy data file to output   | `test_entrypoint_without_dsn_with_dummy_data_file`    |
+| None | None            | Write column headers to output    | `test_entrypoint_without_dsn_without_dummy_data_file` |
+"""
 import pathlib
 
 import pytest
