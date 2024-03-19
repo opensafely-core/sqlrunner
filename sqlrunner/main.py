@@ -12,8 +12,6 @@ from sqlglot.optimizer.qualify_columns import qualify_columns
 
 from sqlrunner import T1OOS_TABLE, utils
 
-from .mssql_log_utils import execute_with_log
-
 
 log = structlog.get_logger()
 
@@ -30,12 +28,7 @@ def main(args):
         else:
             results = read_dummy_data_file(args["dummy_data_file"])
     else:
-        results = run_sql(
-            dsn=args["dsn"],
-            sql_query=sql_query,
-            include_statistics=args["include_statistics"],
-        )
-
+        results = run_sql(dsn=args["dsn"], sql_query=sql_query)
     write_results(results, args["output"])
 
 
@@ -78,7 +71,7 @@ def parse_dsn(dsn):
     }
 
 
-def run_sql(*, dsn, sql_query, include_statistics=False):
+def run_sql(*, dsn, sql_query):
     # `dsn` is expected to follow RFC-1738, just as SQL Alchemy expects:
     # <https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls>
     # dialect+driver://username:password@host:port/database
@@ -86,10 +79,7 @@ def run_sql(*, dsn, sql_query, include_statistics=False):
     conn = pymssql.connect(**parsed_dsn, as_dict=True)
     cursor = conn.cursor()
     log.info("start_executing_sql_query")
-    if include_statistics:
-        execute_with_log(cursor, sql_query, log)
-    else:
-        cursor.execute(sql_query)
+    cursor.execute(sql_query)
     log.info("finish_executing_sql_query")
     yield from cursor
     conn.close()
