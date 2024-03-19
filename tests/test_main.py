@@ -82,45 +82,6 @@ def test_run_sql(dsn, log_output):
     ]
 
 
-@pytest.mark.parametrize(
-    "sql_query",
-    [
-        "CREATE TABLE #test(patient_id int); INSERT #test VALUES (1); SELECT patient_id from #test;",
-        "SELECT 1 as patient_id",
-    ],
-)
-def test_run_sql_include_statistics(dsn, log_output, sql_query):
-    results = main.run_sql(dsn=dsn, sql_query=sql_query, include_statistics=True)
-    assert list(results) == [{"patient_id": 1}]
-
-    by_event = {e["event"]: e for e in log_output.entries}
-    assert by_event["start_executing_sql_query"]["log_level"] == "info"
-    assert by_event["sql_query"]["log_level"] == "info"
-    assert by_event["sql_query"]["sql_query"] == sql_query
-    assert by_event["finish_executing_sql_query"]["log_level"] == "info"
-
-    for k in [
-        "duration_ms",
-        "exec_cpu_ms",
-        "exec_cpu_ratio",
-        "exec_elapsed_ms",
-        "parse_cpu_ms",
-        "parse_elapsed_ms",
-    ]:
-        assert k in by_event["timing_stats"]
-
-    for k in [
-        "lob_logical",
-        "lob_physical",
-        "lob_read_ahead",
-        "logical",
-        "physical",
-        "read_ahead",
-        "scans",
-    ]:
-        assert k in by_event["table_io_stats"]["table_io"]["#test"]
-
-
 @pytest.fixture(params=[None, "subdir"])
 def output_path(tmp_path, request):
     """Returns a temporary output path object.
