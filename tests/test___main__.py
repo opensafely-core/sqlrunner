@@ -10,6 +10,7 @@ string (a path), then SQL Runner's behaviour is as follows:
 | None | path            | Write dummy data file to output   | `test_entrypoint_without_dsn_with_dummy_data_file`    |
 | None | None            | Write column headers to output    | `test_entrypoint_without_dsn_without_dummy_data_file` |
 """
+
 import pathlib
 
 import pytest
