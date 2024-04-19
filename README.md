@@ -2,7 +2,7 @@
 
 SQL Runner allows a platform developer to run SQL against a backend,
 for data development projects.
-Its use is governed by the [platform developer access policy](https://docs.opensafely.org/developer-access-policy/).
+Its use is governed by the [OpenSAFELY Data Access Policy](https://docs.opensafely.org/developer-access-policy/).
 
 ## Type One Opt Out data
 
