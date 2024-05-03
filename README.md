@@ -8,7 +8,7 @@ Its use is governed by the [OpenSAFELY Data Access Policy](https://docs.opensafe
 
 Unless your data development project has permission to use Type One Opt Out (T1OO) data,
 you should either exclude these data or explain why you haven't excluded them in a
-comment.
+comment. **Until L4 filesync is turned off and replaced by Airlock, ALL SQL Runner queries must exclude T1OO data.**
 
 To exclude T1OO data, for example:
 
