@@ -102,9 +102,9 @@ pymssql==2.3.0 \
     --hash=sha256:fd6cc1bb4d3b11fb911268e48b75d5f9ee7f899295e48fe3354fdefa8645180b \
     --hash=sha256:fec42705bea52b801ea4ec509b3baec098c0557a5e1521638b6b90a852cbd70f
     # via -r requirements.prod.in
-sqlglot==25.5.1 \
-    --hash=sha256:80019318158069edc11e6892f74c696e5579a5588da2a0ce11dd7e215a3cb318 \
-    --hash=sha256:c167eac4536dd6ed202fee5107b76b8cb05db85550a47e8448bf6452c4780158
+sqlglot==25.6.1 \
+    --hash=sha256:c1fcbaa00429979f16fb8cea20279a8b3f5312e76d97abb8f8c6a9b21be450d7 \
+    --hash=sha256:ea40f3bf8452e2c1a696fe120163190bd67e49b346336e7db6d34400b57b7601
     # via -r requirements.prod.in
 structlog==24.2.0 \
     --hash=sha256:0e3fe74924a6d8857d3f612739efb94c72a7417d7c7c008d12276bca3b5bf13b \
