@@ -123,6 +123,11 @@ def test_write_results_compressed(output_path):
     "context,suffix",
     [
         (functools.partial(open, mode="w"), ".csv"),
+        pytest.param(
+            functools.partial(gzip.open, mode="wt"),
+            ".csv.gz",
+            marks=pytest.mark.xfail(reason="Not implemented"),
+        ),
     ],
 )
 def test_read_dummy_data_file(context, suffix, tmp_path):
