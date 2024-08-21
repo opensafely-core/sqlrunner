@@ -1,3 +1,4 @@
+import functools
 import gzip
 
 import pytest
@@ -118,9 +119,18 @@ def test_write_results_compressed(output_path):
     assert gzip.open(f_path, "rt").read() == "id\n1\n2\n"
 
 
-def test_read_dummy_data_file(tmp_path):
-    dummy_data_file = tmp_path / "dummy_data_file.csv"
-    dummy_data_file.write_text("id\n1\n2\n", encoding="utf-8")
+@pytest.mark.parametrize(
+    "context,suffix",
+    [
+        (functools.partial(open, mode="w"), ".csv"),
+        (functools.partial(gzip.open, mode="wt"), ".csv.gz"),
+    ],
+)
+def test_read_dummy_data_file(context, suffix, tmp_path):
+    dummy_data_file = tmp_path / f"dummy_data_file{suffix}"
+    with context(dummy_data_file, encoding="utf-8", newline="") as f:
+        f.writelines(["id\n", "1\n", "2\n"])
+
     dummy_rows = list(main.read_dummy_data_file(dummy_data_file))
     assert dummy_rows == [{"id": "1"}, {"id": "2"}]
 
