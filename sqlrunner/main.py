@@ -118,5 +118,11 @@ def write_results(results, f_path):
 
 
 def read_dummy_data_file(f_path):
-    with f_path.open("r", newline="") as f:
+    kwargs = {"newline": "", "encoding": "utf-8"}
+    if f_path.suffixes == [".csv", ".gz"]:
+        context = gzip.open(f_path, "rt", **kwargs)
+    else:
+        context = open(f_path, **kwargs)
+
+    with context as f:
         yield from csv.DictReader(f)
