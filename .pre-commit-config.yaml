@@ -4,15 +4,9 @@ default_language_version:
 repos:
   - repo: local
     hooks:
-    - id: black
-      name: black
-      entry: just black
-      language: system
-      types: [python]
-      require_serial: true
-    - id: ruff
-      name: ruff
-      entry: just ruff
+    - id: check
+      name: check
+      entry: just check
       language: system
       types: [python]
       require_serial: true
