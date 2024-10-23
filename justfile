@@ -96,27 +96,25 @@ upgrade env package="": virtualenv
     FORCE=true "{{ just_executable() }}" requirements-{{ env }} $opts
 
 
+update-dependencies: virtualenv
+    just upgrade prod
+    just upgrade dev
+
 # *args is variadic, 0 or more. This allows us to do `just test -k match`, for example.
 # Run the tests
 test *args: devenv
     $BIN/coverage run --module pytest {{ args }}
     $BIN/coverage report || $BIN/coverage html
 
-
-black *args=".": devenv
-    $BIN/black --check {{ args }}
-
-ruff *args=".": devenv
-    $BIN/ruff check {{ args }}
-
 # run the various dev checks but does not change any files
-check: black ruff
-
+check: devenv
+    $BIN/ruff format --diff --quiet .
+    $BIN/ruff check --output-format=full .
 
 # fix formatting and import sort ordering
 fix: devenv
-    $BIN/black .
-    $BIN/ruff --fix .
+    $BIN/ruff format .
+    $BIN/ruff check --fix .
 
 
 # build the sqlrunner docker image
