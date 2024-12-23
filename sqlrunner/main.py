@@ -2,6 +2,7 @@ import contextlib
 import csv
 import gzip
 import itertools
+import re
 import sys
 from urllib import parse
 
@@ -10,7 +11,7 @@ import structlog
 from sqlglot.dialects import TSQL
 from sqlglot.optimizer.qualify_columns import qualify_columns
 
-from sqlrunner import T1OOS_TABLE, utils
+from sqlrunner import OLD_T1OOS_TABLE, T1OOS_TABLE, utils
 
 
 log = structlog.get_logger()
@@ -57,7 +58,18 @@ def read_text(f_path):
 
 
 def are_t1oos_handled(sql_query):
-    return sql_query.find(T1OOS_TABLE) >= 0
+    if re.search(rf"\b{T1OOS_TABLE}", sql_query):
+        # If T1OOS_TABLE is referenced in the query, then the query is safe to run.
+        # The word boundary (\b) is necessary because PatientsWithTypeOneDissent
+        # is a substring of AllowedPatientsWithTypeOneDissent.
+        return True
+    if re.search(f"--.*{OLD_T1OOS_TABLE}", sql_query):
+        # If OLD_T1OOS_TABLE is referenced in a comment in the query, then the query
+        # is safe to run.  (It would be unnecessary faff to change existing queries
+        # that reference the old table namein a comment to explain why T1OO data
+        # haven't been excluded.)
+        return True
+    return False
 
 
 def parse_dsn(dsn):

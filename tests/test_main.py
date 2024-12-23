@@ -3,7 +3,7 @@ import gzip
 
 import pytest
 
-from sqlrunner import T1OOS_TABLE, main
+from sqlrunner import OLD_T1OOS_TABLE, T1OOS_TABLE, main
 
 
 def test_main_with_t1oos_not_handled(tmp_path):
@@ -27,9 +27,17 @@ def test_main_with_t1oos_not_handled(tmp_path):
         (
             f"""
                 SELECT Patient_ID FROM Patient
-                WHERE Patient_ID IN (SELECT Patient_ID FROM {T1OOS_TABLE})
+                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T1OOS_TABLE})
             """,
             True,
+        ),
+        # handled incorrectly by query (uses the old name)
+        (
+            f"""
+                SELECT Patient_ID FROM Patient
+                WHERE Patient_ID IN (SELECT Patient_ID FROM {OLD_T1OOS_TABLE})
+            """,
+            False,
         ),
         # not handled by comment
         (
@@ -47,12 +55,19 @@ def test_main_with_t1oos_not_handled(tmp_path):
             """,
             True,
         ),
+        # handled by comment via old name
+        (
+            f"""
+                -- {OLD_T1OOS_TABLE} intentionally not excluded
+                SELECT Patient_ID FROM Patient
+            """,
+            True,
+        ),
         # handled by query, but undesirable: it's hard to prevent this with a "light
         # touch" approach
         (
             f"""
-                SELECT Patient_ID FROM Patient
-                WHERE Patient_ID NOT IN (SELECT Patient_ID FROM {T1OOS_TABLE})
+                SELECT Patient_ID FROM {T1OOS_TABLE}
              """,
             True,
         ),

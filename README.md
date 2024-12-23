@@ -15,7 +15,7 @@ To exclude T1OO data, for example:
 ```sql
 SELECT <select_list>
 FROM Patient
-WHERE Patient_ID IN (SELECT Patient_ID FROM AllowedPatientsWithTypeOneDissent)
+WHERE Patient_ID NOT IN (SELECT Patient_ID FROM PatientsWithTypeOneDissent)
 GROUP BY <group_by_clause>
 ORDER BY <order_by_expression>
 ```
@@ -24,16 +24,12 @@ To explain why T1OO data haven't been excluded, for example:
 
 ```sql
 -- This query is for a data development project that must include T1OO data.
--- Consequently, this query doesn't reference the AllowedPatientsWithTypeOneDissent table.
+-- Consequently, this query doesn't reference the PatientsWithTypeOneDissent table.
 SELECT <select_list>
 FROM Patient
 GROUP BY <group_by_clause>
 ORDER BY <order_by_expression>
 ```
-
-Note that the table has its name for historical reasons, and reads
-slightly oddly: it should be interpreted as "allowed patients with
-regard to type one dissents".
 
 ## Notes for developers
 
