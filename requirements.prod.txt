@@ -60,15 +60,15 @@ pymssql==2.3.4 \
     --hash=sha256:f5de0c70701736a815facc4d1cb943293829b7c5994c6c50bbc9abdf138cf1e4 \
     --hash=sha256:f7f245acbdf89b96a41513ef0214b55a3ba2824f1f3119dd1945443b6cac78d3
     # via -r requirements.prod.in
-sqlglot==26.12.1 \
-    --hash=sha256:46c3b55c914310240f576ccb5ee652df36f18ec1553ac7174f409e291224cf55 \
-    --hash=sha256:ee67df004208650056d81cd2ed70fc7cc9c4a0711049b596db4a47e949c9a0bf
+sqlglot==26.16.0 \
+    --hash=sha256:253585bd6694bf376af100a306f71d8dae2e6b5be0b61df130a7c1d868d28487 \
+    --hash=sha256:7ecc3f7c73d714cad39a11a48c76db5e64466f93c793bf56ed8df6bb1210efb7
     # via -r requirements.prod.in
 structlog==25.2.0 \
     --hash=sha256:0fecea2e345d5d491b72f3db2e5fcd6393abfc8cd06a4851f21fcd4d1a99f437 \
     --hash=sha256:d9f9776944207d1035b8b26072b9b140c63702fd7aa57c2f85d28ab701bd8e92
     # via -r requirements.prod.in
-typing-extensions==4.13.1 \
-    --hash=sha256:4b6cf02909eb5495cfbc3f6e8fd49217e6cc7944e145cdda8caa3734777f9e69 \
-    --hash=sha256:98795af00fb9640edec5b8e31fc647597b4691f099ad75f469a2616be1a76dff
+typing-extensions==4.13.2 \
+    --hash=sha256:a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c \
+    --hash=sha256:e6c81219bd689f51865d9e372991c540bda33a0379d5573cddb9a3a23f7caaef
     # via structlog
