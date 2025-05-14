@@ -22,6 +22,7 @@ jobs:
         private-key: ${{ secrets.CREATE_PR_APP_PRIVATE_KEY }}
 
     - uses: bennettoxford/update-dependencies-action@v1
+      id: update
       with:
         token: ${{ steps.generate-token.outputs.token }}
 
