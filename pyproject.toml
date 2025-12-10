@@ -1,3 +1,16 @@
+[project]
+  name = "sqlrunner"
+  version = "0.1.0"
+  description = "sqlunner"
+  readme = "README.md"
+  requires-python = ">=3.10"
+
+  dependencies = [
+    "pymssql",
+    "structlog",
+    "sqlglot",
+]
+
 [tool.coverage.run]
 branch = true
 dynamic_context = "test_function"
@@ -42,3 +55,18 @@ extend-ignore = [
   "E731",
 ]
 isort.lines-after-imports = 2
+
+# Note: any `exclude-newer-package` timestamps should be removed if > 7 days old
+# See https://github.com/opensafely-core/repo-template/blob/main/DEVELOPERS.md for details
+[tool.uv]
+exclude-newer = "2025-12-03T00:00:00Z"
+exclude-newer-package = {}
+
+[dependency-groups]
+dev = [
+  "coverage",
+  "docker",
+  "pre-commit",
+  "pytest",
+  "ruff",
+]
