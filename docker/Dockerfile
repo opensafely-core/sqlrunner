@@ -29,7 +29,7 @@
 # These build args have defaults, but are usually set from docker/.env. They
 # are used in FROM lines, so need to be declared globally and have defaults
 # set.
-ARG UBUNTU_VERSION=22.04
+ARG UBUNTU_VERSION=24.04
 ARG UV_VERSION=0.9
 
 # DL3007 ignored because base-docker we specifically always want to build on
