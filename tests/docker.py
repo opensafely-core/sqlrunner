@@ -1,5 +1,6 @@
-import docker
 from docker.errors import NotFound
+
+import docker
 
 
 class Containers:
