@@ -8,11 +8,11 @@ charset-normalizer==3.4.4
     # via requests
 colorama==0.4.6 ; sys_platform == 'win32'
     # via pytest
-coverage==7.13.0
+coverage==7.13.1
 distlib==0.4.0
     # via virtualenv
 docker==7.1.0
-filelock==3.20.0
+filelock==3.20.1
     # via virtualenv
 identify==2.6.15
     # via pre-commit
@@ -20,7 +20,7 @@ idna==3.11
     # via requests
 iniconfig==2.3.0
     # via pytest
-nodeenv==1.9.1
+nodeenv==1.10.0
     # via pre-commit
 packaging==25.0
     # via pytest
@@ -28,10 +28,10 @@ platformdirs==4.5.1
     # via virtualenv
 pluggy==1.6.0
     # via pytest
-pre-commit==4.5.0
+pre-commit==4.5.1
 pygments==2.19.2
     # via pytest
-pymssql==2.3.10
+pymssql==2.3.11
     # via sqlrunner
 pytest==9.0.2
 pywin32==311 ; sys_platform == 'win32'
@@ -40,12 +40,12 @@ pyyaml==6.0.3
     # via pre-commit
 requests==2.32.5
     # via docker
-ruff==0.14.8
-sqlglot==28.1.0
+ruff==0.14.10
+sqlglot==28.5.0
     # via sqlrunner
 structlog==25.5.0
     # via sqlrunner
-urllib3==2.6.1
+urllib3==2.6.2
     # via
     #   docker
     #   requests
