@@ -45,7 +45,7 @@ sqlglot==28.5.0
     # via sqlrunner
 structlog==25.5.0
     # via sqlrunner
-urllib3==2.6.2
+urllib3==2.6.3
     # via
     #   docker
     #   requests
