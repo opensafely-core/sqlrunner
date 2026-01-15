@@ -12,7 +12,7 @@ coverage==7.13.1
 distlib==0.4.0
     # via virtualenv
 docker==7.1.0
-filelock==3.20.2
+filelock==3.20.3
     # via virtualenv
 identify==2.6.15
     # via pre-commit
