@@ -12,9 +12,9 @@ coverage==7.13.1
 distlib==0.4.0
     # via virtualenv
 docker==7.1.0
-filelock==3.20.2
+filelock==3.20.3
     # via virtualenv
-identify==2.6.15
+identify==2.6.16
     # via pre-commit
 idna==3.11
     # via requests
@@ -40,8 +40,8 @@ pyyaml==6.0.3
     # via pre-commit
 requests==2.32.5
     # via docker
-ruff==0.14.10
-sqlglot==28.5.0
+ruff==0.14.11
+sqlglot==28.6.0
     # via sqlrunner
 structlog==25.5.0
     # via sqlrunner
@@ -49,5 +49,5 @@ urllib3==2.6.3
     # via
     #   docker
     #   requests
-virtualenv==20.36.0
+virtualenv==20.36.1
     # via pre-commit
