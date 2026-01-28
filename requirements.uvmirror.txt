@@ -40,7 +40,7 @@ pyyaml==6.0.3
     # via pre-commit
 requests==2.32.5
     # via docker
-ruff==0.14.11
+ruff==0.14.13
 sqlglot==28.6.0
     # via sqlrunner
 structlog==25.5.0
