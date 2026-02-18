@@ -26,7 +26,8 @@ class Containers:
 
     def get_container_ip(self, name):
         container = self.get_container(name)
-        return container.attrs["NetworkSettings"]["IPAddress"]
+        networks = container.attrs["NetworkSettings"]["Networks"].values()
+        return list(networks)[0]["IPAddress"]
 
     def run_bg(self, name, image, **kwargs):  # pragma: no cover
         return self._run(name=name, image=image, detach=True, **kwargs)
