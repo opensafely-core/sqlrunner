@@ -12,7 +12,7 @@ coverage==7.13.4
 distlib==0.4.0
     # via virtualenv
 docker==7.1.0
-filelock==3.20.3
+filelock==3.24.2
     # via virtualenv
 identify==2.6.16
     # via pre-commit
@@ -24,14 +24,14 @@ nodeenv==1.10.0
     # via pre-commit
 packaging==26.0
     # via pytest
-platformdirs==4.5.1
+platformdirs==4.9.2
     # via virtualenv
 pluggy==1.6.0
     # via pytest
 pre-commit==4.5.1
 pygments==2.19.2
     # via pytest
-pymssql==2.3.11
+pymssql==2.3.13
     # via sqlrunner
 pytest==9.0.2
 pywin32==311 ; sys_platform == 'win32'
@@ -40,7 +40,7 @@ pyyaml==6.0.3
     # via pre-commit
 requests==2.32.5
     # via docker
-ruff==0.15.0
+ruff==0.15.1
 sqlglot==28.10.1
     # via sqlrunner
 structlog==25.5.0
