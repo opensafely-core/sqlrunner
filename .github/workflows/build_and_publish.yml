@@ -16,6 +16,8 @@ env:
 
 jobs:
   tag-new-version:
+    permissions:
+      contents: write
     name: Tag new version
     runs-on: ubuntu-24.04
     outputs:
@@ -31,6 +33,10 @@ jobs:
           create_annotated_tag: true
 
   build-and-publish-docker-image:
+    permissions:
+      packages: write
+      contents: read
+
     name: Build and publish Docker image
     runs-on: ubuntu-24.04
     needs: tag-new-version
