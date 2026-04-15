@@ -4,7 +4,7 @@ certifi==2026.2.25
     # via requests
 cfgv==3.5.0
     # via pre-commit
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
     # via requests
 colorama==0.4.6 ; sys_platform == 'win32'
     # via pytest
@@ -37,8 +37,8 @@ pygments==2.20.0
     # via pytest
 pymssql==2.3.13
     # via sqlrunner
-pytest==9.0.2
-python-discovery==1.2.1
+pytest==9.0.3
+python-discovery==1.2.2
     # via virtualenv
 pywin32==311 ; sys_platform == 'win32'
     # via docker
@@ -46,8 +46,8 @@ pyyaml==6.0.3
     # via pre-commit
 requests==2.33.1
     # via docker
-ruff==0.15.8
-sqlglot==30.1.0
+ruff==0.15.9
+sqlglot==30.3.0
     # via sqlrunner
 structlog==25.5.0
     # via sqlrunner
