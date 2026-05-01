@@ -43,7 +43,7 @@ jobs:
     if: needs.tag-new-version.outputs.new_version
     steps:
       - uses: actions/checkout@v6
-      - uses: opensafely-core/setup-action@v1
+      - uses: opensafely-core/setup-action@v1.6.1
         with:
           install-just: true
       - name: Set VERSION environment variable
