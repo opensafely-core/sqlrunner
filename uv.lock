@@ -2,9 +2,6 @@ version = 1
 revision = 3
 requires-python = ">=3.14"
 
-[options]
-exclude-newer = "2026-04-29T00:00:00Z"
-
 [[package]]
 name = "certifi"
 version = "2026.4.22"
@@ -382,18 +379,18 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pymssql" },
-    { name = "sqlglot" },
-    { name = "structlog" },
+    { name = "pymssql", specifier = "<=2.3.13" },
+    { name = "sqlglot", specifier = "<=30.6.0" },
+    { name = "structlog", specifier = "<=25.5.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "coverage" },
-    { name = "docker" },
-    { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "ruff" },
+    { name = "coverage", specifier = "<=7.13.5" },
+    { name = "docker", specifier = "<=7.1.0" },
+    { name = "pre-commit", specifier = "<=4.6.0" },
+    { name = "pytest", specifier = "<=9.0.3" },
+    { name = "ruff", specifier = "<=0.15.12" },
 ]
 
 [[package]]
