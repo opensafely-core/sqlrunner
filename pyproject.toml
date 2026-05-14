@@ -6,9 +6,9 @@
   requires-python = ">=3.14"
 
   dependencies = [
-    "pymssql",
-    "structlog",
-    "sqlglot",
+    "pymssql<=2.3.13",
+    "sqlglot<=30.6.0",
+    "structlog<=25.5.0",
 ]
 
 [tool.coverage.run]
@@ -64,9 +64,9 @@ exclude-newer-package = {}
 
 [dependency-groups]
 dev = [
-  "coverage",
-  "docker",
-  "pre-commit",
-  "pytest",
-  "ruff",
+    "coverage<=7.13.5",
+    "docker<=7.1.0",
+    "pre-commit<=4.6.0",
+    "pytest<=9.0.3",
+    "ruff<=0.15.12",
 ]
