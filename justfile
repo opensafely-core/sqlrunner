@@ -38,7 +38,7 @@ upgrade-all cooldown="7 days ago": && devenv
     uv lock --upgrade --exclude-newer "{{ cooldown }}"
 
 # update the uv mirror requirements file
-uvmirror file="requirements.uvmirror.txt":
+uvmirror file="requirements.uvmirror":
     rm -f {{ file }}
     uv export --format requirements-txt --frozen --no-hashes --all-groups --all-extras > {{ file }}
 
@@ -105,6 +105,9 @@ check-lockfile:
     unset UV_EXCLUDE_NEWER
     rc=0
     uv lock --check
+
+check-renovate-config:
+    npx --yes --package renovate -- renovate-config-validator
 
 # Fix formatting, import sort ordering, and justfile
 fix:
