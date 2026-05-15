@@ -106,6 +106,9 @@ check-lockfile:
     rc=0
     uv lock --check
 
+check-renovate-config:
+    npx --yes --package renovate -- renovate-config-validator
+
 # Fix formatting, import sort ordering, and justfile
 fix:
     -uv run ruff check --fix .
