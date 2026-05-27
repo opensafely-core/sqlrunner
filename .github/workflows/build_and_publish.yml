@@ -23,7 +23,7 @@ jobs:
     outputs:
       new_version: ${{ steps.tag.outputs.new_version }} # no prefix, may be `undefined`
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0 # all history
       - id: tag
@@ -42,8 +42,8 @@ jobs:
     needs: tag-new-version
     if: needs.tag-new-version.outputs.new_version
     steps:
-      - uses: actions/checkout@v6
-      - uses: opensafely-core/setup-action@v1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: opensafely-core/setup-action@93841f27c28c75bf85b1a0a915e2391a06c6c8a6 # v1
         with:
           install-just: true
       - name: Set VERSION environment variable
