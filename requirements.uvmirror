@@ -49,7 +49,7 @@ requests==2.34.2
 ruff==0.15.13
 sqlglot==30.10.0
     # via sqlrunner
-structlog==25.5.0
+structlog==26.1.0
     # via sqlrunner
 urllib3==2.7.0
     # via

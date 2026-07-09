@@ -8,7 +8,7 @@
   dependencies = [
     "pymssql<=2.3.13",
     "sqlglot<=30.10.0",
-    "structlog<=25.5.0",
+    "structlog<=26.1.0",
 ]
 
 [tool.coverage.run]
