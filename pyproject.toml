@@ -7,7 +7,7 @@
 
   dependencies = [
     "pymssql<=2.3.13",
-    "sqlglot<=30.8.0",
+    "sqlglot<=30.10.0",
     "structlog<=25.5.0",
 ]
 
