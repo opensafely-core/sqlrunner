@@ -8,7 +8,7 @@ charset-normalizer==3.4.7
     # via requests
 colorama==0.4.6 ; sys_platform == 'win32'
     # via pytest
-coverage==7.14.0
+coverage==7.14.3
 distlib==0.4.2
     # via virtualenv
 docker==7.1.0
@@ -37,7 +37,7 @@ pygments==2.20.0
     # via pytest
 pymssql==2.3.13
     # via sqlrunner
-pytest==9.0.3
+pytest==9.1.1
 python-discovery==1.4.0
     # via virtualenv
 pywin32==312 ; sys_platform == 'win32'
