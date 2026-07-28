@@ -12,7 +12,7 @@ coverage==7.14.3
 distlib==0.4.3
     # via virtualenv
 docker==7.1.0
-filelock==3.29.6
+filelock==3.29.7
     # via
     #   python-discovery
     #   virtualenv
@@ -38,7 +38,7 @@ pygments==2.20.0
 pymssql==2.3.13
     # via sqlrunner
 pytest==9.1.1
-python-discovery==1.4.3
+python-discovery==1.4.4
     # via virtualenv
 pywin32==312 ; sys_platform == 'win32'
     # via docker
@@ -55,5 +55,5 @@ urllib3==2.7.0
     # via
     #   docker
     #   requests
-virtualenv==21.6.0
+virtualenv==21.6.1
     # via pre-commit
