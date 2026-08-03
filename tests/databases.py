@@ -25,7 +25,7 @@ def wait_for_database(database, timeout=10):
             break
         except pymssql.OperationalError as e:  # pragma: no cover
             if time.time() > limit:
-                raise Exception(
+                raise Exception(  # noqa: TRY002
                     f"Failed to connect to database after {timeout} seconds"
                 ) from e
             time.sleep(1)
