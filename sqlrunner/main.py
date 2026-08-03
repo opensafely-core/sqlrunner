@@ -63,7 +63,7 @@ def are_t1oos_handled(sql_query):
         # The word boundary (\b) is necessary because PatientsWithTypeOneDissent
         # is a substring of AllowedPatientsWithTypeOneDissent.
         return True
-    if re.search(f"--.*{OLD_T1OOS_TABLE}", sql_query):
+    if re.search(f"--.*{OLD_T1OOS_TABLE}", sql_query):  # noqa: SIM103
         # If OLD_T1OOS_TABLE is referenced in a comment in the query, then the query
         # is safe to run.  (It would be unnecessary faff to change existing queries
         # that reference the old table namein a comment to explain why T1OO data
