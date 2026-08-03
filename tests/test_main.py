@@ -131,7 +131,8 @@ def test_write_results_compressed(output_path):
     f_path = output_path / "results.csv.gz"
     results = [{"id": 1}, {"id": 2}]
     main.write_results(iter(results), f_path)
-    assert gzip.open(f_path, "rt").read() == "id\n1\n2\n"
+    with gzip.open(f_path, "rt") as f:
+        assert f.read() == "id\n1\n2\n"
 
 
 @pytest.mark.parametrize(

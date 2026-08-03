@@ -115,9 +115,9 @@ def write_results(results, f_path):
     if f_path is not None:
         kwargs = {"newline": "", "encoding": "utf-8"}
         if f_path.suffixes == [".csv", ".gz"]:
-            context = gzip.open(f_path, "wt", compresslevel=6, **kwargs)
+            context = gzip.open(f_path, "wt", compresslevel=6, **kwargs)  # noqa: SIM115
         else:
-            context = open(f_path, "w", **kwargs)
+            context = open(f_path, "w", **kwargs)  # noqa: SIM115
     else:
         context = contextlib.nullcontext(sys.stdout)
 
@@ -132,9 +132,9 @@ def write_results(results, f_path):
 def read_dummy_data_file(f_path):
     kwargs = {"newline": "", "encoding": "utf-8"}
     if f_path.suffixes == [".csv", ".gz"]:
-        context = gzip.open(f_path, "rt", **kwargs)
+        context = gzip.open(f_path, "rt", **kwargs)  # noqa: SIM115
     else:
-        context = open(f_path, **kwargs)
+        context = open(f_path, **kwargs)  # noqa: SIM115
 
     with context as f:
         yield from csv.DictReader(f)
