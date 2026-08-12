@@ -58,9 +58,9 @@ isort.lines-after-imports = 2
 
 [dependency-groups]
 dev = [
-    "coverage<=7.15.2",
+    "coverage<=7.15.3",
     "docker<=7.2.0",
     "pre-commit<=4.6.1",
     "pytest<=9.1.1",
-    "ruff<=0.16.0",
+    "ruff<=0.16.1",
 ]
