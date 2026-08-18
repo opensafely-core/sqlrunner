@@ -47,7 +47,7 @@ pyyaml==6.0.3
 requests==2.34.2
     # via docker
 ruff==0.16.1
-sqlglot==30.12.0
+sqlglot==30.14.0
     # via sqlrunner
 structlog==26.1.0
     # via sqlrunner
