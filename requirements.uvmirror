@@ -8,7 +8,7 @@ charset-normalizer==3.5.1
     # via requests
 colorama==0.4.6 ; sys_platform == 'win32'
     # via pytest
-coverage==7.15.3
+coverage==7.16.0
 distlib==0.4.3
     # via virtualenv
 docker==7.2.0
@@ -30,7 +30,7 @@ platformdirs==4.11.3
     # via virtualenv
 pluggy==1.6.0
     # via pytest
-pre-commit==4.6.1
+pre-commit==4.6.2
 pygments==2.21.0
     # via pytest
 pymssql==2.3.13
@@ -44,7 +44,7 @@ pyyaml==6.0.3
     # via pre-commit
 requests==2.34.2
     # via docker
-ruff==0.16.1
+ruff==0.16.5
 sqlglot==30.14.0
     # via sqlrunner
 structlog==26.1.0
