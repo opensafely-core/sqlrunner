@@ -12,7 +12,7 @@ coverage==7.16.0
 distlib==0.4.3
     # via virtualenv
 docker==7.2.0
-filelock==3.32.6
+filelock==3.32.7
     # via
     #   python-discovery
     #   virtualenv
@@ -49,9 +49,9 @@ sqlglot==30.17.0
     # via sqlrunner
 structlog==26.1.0
     # via sqlrunner
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   docker
     #   requests
-virtualenv==21.7.9
+virtualenv==21.7.10
     # via pre-commit
