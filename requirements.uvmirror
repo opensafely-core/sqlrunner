@@ -12,21 +12,23 @@ coverage==7.16.0
 distlib==0.4.3
     # via virtualenv
 docker==7.2.0
-filelock==4.0.3
+filelock==4.0.7
     # via
     #   python-discovery
     #   virtualenv
-identify==2.6.19
+identify==2.6.20
     # via pre-commit
 idna==3.20
     # via requests
 iniconfig==2.3.0
     # via pytest
-nodeenv==1.10.0
+nodeenv==1.11.0
     # via pre-commit
 packaging==26.3
-    # via pytest
-platformdirs==4.11.13
+    # via
+    #   pytest
+    #   virtualenv
+platformdirs==4.12.2
     # via virtualenv
 pluggy==1.6.0
     # via pytest
@@ -53,5 +55,5 @@ urllib3==2.8.0
     # via
     #   docker
     #   requests
-virtualenv==21.12.1
+virtualenv==21.14.1
     # via pre-commit
