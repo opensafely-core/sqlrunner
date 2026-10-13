@@ -33,7 +33,7 @@ pluggy==1.6.0
 pre-commit==4.6.2
 pygments==2.21.0
     # via pytest
-pymssql==2.4.1
+pymssql==2.4.2
     # via sqlrunner
 pytest==9.1.1
 python-discovery==1.6.1
@@ -45,7 +45,7 @@ pyyaml==6.0.3
 requests==2.34.2
     # via docker
 ruff==0.16.9
-sqlglot==30.19.0
+sqlglot==30.21.0
     # via sqlrunner
 structlog==26.1.0
     # via sqlrunner
