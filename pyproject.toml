@@ -60,7 +60,7 @@ isort.lines-after-imports = 2
 dev = [
     "coverage<=7.16.2",
     "docker<=7.2.0",
-    "pre-commit<=4.6.2",
+    "pre-commit<=4.7.0",
     "pytest<=9.1.1",
-    "ruff<=0.16.10",
+    "ruff<=0.17.1",
 ]
