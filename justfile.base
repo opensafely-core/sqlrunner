@@ -4,7 +4,7 @@
 # docker buildx imagetools inspect kjanat/actionlint:1.17.0
 
 # renovate: datasource=docker depName=kjanat/actionlint versioning=docker
-actionlint_version := "1.17.0@sha256:d484cccadf56b6a356466ade9af4c8e05c5dce1badaf0a9ecd0d7639d68d9c92"
+actionlint_version := "1.17.1@sha256:c0a63b3e5c974c2466ead39404b70e448176beaff8c5ec7af0b2e96191aea661"
 
 # renovate: datasource=docker depName=renovate/renovate versioning=docker
 renovate_version := "44.175.0@sha256:e9279a5df7697622f880306c84460be14a0492d5dcf5b20cdae1995c836cc4d7"
