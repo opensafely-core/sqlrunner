@@ -23,6 +23,17 @@
   "prConcurrentLimit" : 0,
   // No limit on number of concurrent branches
   "branchConcurrentLimit": 0,
+  // Remap warning logs about using timestamp-optional for packages without
+  // a release timestamp. We do this deliberately for certain depenency types
+  // to avoid renovate jobs getting stuck in "pending" forever; changing the
+  // log level to info prevents this from appearing as an error on the
+  // Renovate dashboards
+  "logLevelRemap": [
+    {
+      "matchMessage": "/Some .+ did not have a releaseTimestamp, but as we're running with minimumReleaseAgeBehaviour=timestamp-optional, proceeding/",
+      "newLogLevel": "info"
+    }
+  ],
   // Custom manager to update versions in justfiles
   "customManagers": [
     {
