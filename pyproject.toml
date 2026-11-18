@@ -6,8 +6,8 @@
   requires-python = ">=3.14"
 
   dependencies = [
-    "pymssql<=2.4.3",
-    "sqlglot<=30.21.0",
+    "pymssql<=2.4.6",
+    "sqlglot<=30.30.0",
     "structlog<=26.1.0",
 ]
 

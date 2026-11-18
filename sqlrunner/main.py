@@ -41,7 +41,7 @@ def get_column_headers(sql_query):
 
     # expand out "*" to full column names if referencing another object
     # in query with explicit column names
-    columns = qualify_columns(parsed[-1], schema=None, infer_schema=True).named_selects
+    columns = qualify_columns(parsed[-1], schema={}).named_selects
 
     # if "*" not referencing an object with explicit column names
     # we don't know what the headers should be
